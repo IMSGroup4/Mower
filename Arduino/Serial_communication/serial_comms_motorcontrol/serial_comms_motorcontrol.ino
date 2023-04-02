@@ -211,12 +211,30 @@ float RELAX_ANGLE = -1;                    //Natural balance angle,should be adj
   #define ENCODER_BOARD_CAR_POS_MOTION     0x05
 
 
+
 void setMotorPwm(int16_t pwm);
 
 void updateSpeed(void);
 
 void setup() {
   Serial.begin(115200);
+  
+  encoders[0] = MeEncoderMotor(SLOT_1);
+  encoders[1] = MeEncoderMotor(SLOT_2);
+  encoders[0].begin();
+  encoders[1].begin();
+
+  
+  wdt_reset();
+  encoders[0].runSpeed(0);
+  encoders[1].runSpeed(0);
+
+  //Set Pwm 8KHz
+  TCCR1A = _BV(WGM10);
+  TCCR1B = _BV(CS11) | _BV(WGM12);
+
+  TCCR2A = _BV(WGM21) | _BV(WGM20);
+  TCCR2B = _BV(CS21);
   while (!Serial) {
     ; // wait for serial port to connect via USB
   }
@@ -246,10 +264,6 @@ void TurnRight(void)
 void loop() {
   char data;
   
-  encoders[0] = MeEncoderMotor(SLOT_1);
-  encoders[1] = MeEncoderMotor(SLOT_2);
-  encoders[0].begin();
-  encoders[1].begin();
   if (Serial.available() > 0) {
     data = Serial.read();
     switch (data) {
