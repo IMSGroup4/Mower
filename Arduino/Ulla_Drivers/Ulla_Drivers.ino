@@ -11,7 +11,7 @@ Servo servos[12];
 MeDCMotor dc;
 MeTemperature ts;
 MeRGBLed led;
-MeUltrasonicSensor *us = NULL;  //PORT_10
+MeUltrasonicSensor ultraSensor(PORT_7); //PORT_10
 Me7SegmentDisplay seg;
 MePort generalDevice;
 MeLEDMatrix ledMx;
@@ -218,14 +218,32 @@ void setMotorPwm(int16_t pwm);
 void updateSpeed(void);
 
 double getDistanceCm(){
-  return us.distanceCm()
+  double distance = ultraSensor.distanceCm();
+  return distance;
 }
-bool crashDetection(){
-  if(getDistanceCm() <= max_crash_distance_cm){
-    return true;
+bool crashDetection(double limit){
+  
+  if( getDistanceCm()<= limit){
+    //C is a placeholder for a crash symbol
+    //Serial.write("C")
+    //LOCK DRIVING HERE TO AWAIT FURTHER ENVIRONMENTAL INFORMATION
+    return false;
   }
   else{
-    return false;
+    return true;
+  }
+}
+void crashAvoidance(){
+  Backward();
+  TurnLeft();
+
+}
+void toddlerTime(){
+  if(crashDetection(max_crash_distance_cm)){
+    Backward();
+    Stop();
+    RAM();
+    
   }
 }
 
@@ -275,6 +293,22 @@ void TurnRight(void)
   Encoder_2.setMotorPwm(moveSpeed);
 }
 
+void SpinCWDeg(int deg){
+  
+}
+void SpinCCWDeg(int deg){
+
+}
+
+void Stop(void){
+  Encoder_1.setMotorPwm(0);
+  Encoder_2.setMotorPwm(0);
+}
+void RAM(void){
+  Encoder_1.setMotorPwm(-255);
+  Encoder_2.setMotorPwm(255);
+}
+
 /**
  * @brief This function reads a char = {w,s,a,d} and responds by driving in a direction ={Front,Back,Left,Right}
  * it also responds using UART with the command that was run as feedback
@@ -313,7 +347,18 @@ void readSerialBus()
 
 
 void loop() {
-  readSerialBus()
+  do{
+  Forward(); 
+  Serial.print("Running");
+  }
+  while (crashDetection(max_crash_distance_cm));
+
+  do{
+    Backward();
+    delay(1); 
+    TurnRight();
+  }
+  while(!crashDetection(max_crash_distance_cm*2));
   
   } 
 
