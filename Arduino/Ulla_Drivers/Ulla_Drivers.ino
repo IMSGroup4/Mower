@@ -121,6 +121,8 @@ double  speed_Integral_average = 0.0;
 double  angle_speed = 0.0;
 double  balance_car_speed_offsets = 0.0;
 
+double max_crash_distance_cm = 10;
+
 float angleServo = 90.0;
 float dt;
 
@@ -211,10 +213,21 @@ float RELAX_ANGLE = -1;                    //Natural balance angle,should be adj
   #define ENCODER_BOARD_CAR_POS_MOTION     0x05
 
 
-
 void setMotorPwm(int16_t pwm);
 
 void updateSpeed(void);
+
+double getDistanceCm(){
+  return us.distanceCm()
+}
+bool crashDetection(){
+  if(getDistanceCm() <= max_crash_distance_cm){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
 
 void setup() {
   Serial.begin(115200);
@@ -239,6 +252,7 @@ void setup() {
     ; // wait for serial port to connect via USB
   }
 }
+
 void Forward(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed);
@@ -261,7 +275,13 @@ void TurnRight(void)
   Encoder_2.setMotorPwm(moveSpeed);
 }
 
-void loop() {
+/**
+ * @brief This function reads a char = {w,s,a,d} and responds by driving in a direction ={Front,Back,Left,Right}
+ * it also responds using UART with the command that was run as feedback
+ * 
+ */
+void readSerialBus()
+{
   char data;
   
   if (Serial.available() > 0) {
@@ -287,5 +307,13 @@ void loop() {
       Serial.write("No commands", 12);
       break;    
     }
-  } 
+  }
 }
+
+
+
+void loop() {
+  readSerialBus()
+  
+  } 
+
