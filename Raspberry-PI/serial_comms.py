@@ -4,8 +4,8 @@ import serial
 import time
 import keyboard
 import curses
-
-ser = serial.Serial("/dev/ttyACM0", 115200, timeout=1)
+#if serial fail try to change it to /dev/ttyACM0
+ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
 
 # Reset the Arduino line. This is key to getting the write to work.
 # Without it, the first few writes don't work.
