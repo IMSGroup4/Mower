@@ -44,6 +44,34 @@ typedef struct MeModule
   float values[3];
 } MeModule;
 
+/*
+struct Driver
+{
+  enum Mode = {
+    Autonomous,
+    Controller,
+    Toddler
+  }Mode;
+  enum STATE = {
+    Driving,
+    Scanning,
+    
+  }State;
+
+}Driver;
+*/
+enum Direction {
+  forward,
+  backward,
+  left,
+  right,
+  backwardAndLeft,
+  backwardAndRight,
+  spinCW,
+  spinCCW,
+  stop
+}direction;
+
 union
 {
   uint8_t byteVal[4];
@@ -227,10 +255,10 @@ bool crashDetection(double limit){
     //C is a placeholder for a crash symbol
     //Serial.write("C")
     //LOCK DRIVING HERE TO AWAIT FURTHER ENVIRONMENTAL INFORMATION
-    return false;
+    return true;
   }
   else{
-    return true;
+    return false;
   }
 }
 void crashAvoidance(){
@@ -269,8 +297,12 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect via USB
   }
+  direction = Direction::stop;
+  buzzer.setpin(BUZZER_PORT);
+  //direction = Direction::forward;
 }
 
+int leftCompensation = 10;
 void Forward(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed);
@@ -292,12 +324,24 @@ void TurnRight(void)
   Encoder_1.setMotorPwm(-moveSpeed/2);
   Encoder_2.setMotorPwm(moveSpeed);
 }
-
-void SpinCWDeg(int deg){
-  
+void BackwardAndTurnLeft(void)
+{
+  Encoder_1.setMotorPwm(moveSpeed/4);
+  Encoder_2.setMotorPwm(-moveSpeed);
 }
-void SpinCCWDeg(int deg){
+void BackwardAndTurnRight(void)
+{
+  Encoder_1.setMotorPwm(moveSpeed);
+  Encoder_2.setMotorPwm(-moveSpeed/4);
+}
 
+void SpinCW(){
+  Encoder_1.setMotorPwm(moveSpeed);
+  Encoder_2.setMotorPwm(moveSpeed);
+}
+void SpinCCW(){
+  Encoder_1.setMotorPwm(-moveSpeed);
+  Encoder_2.setMotorPwm(-moveSpeed);
 }
 
 void Stop(void){
@@ -344,21 +388,82 @@ void readSerialBus()
   }
 }
 
+void changeDirection(Direction dir){
+  if(dir == direction){
+    //DO NOTHING
+  }
+  else{
+    switch(dir){
+      case Direction::forward:
+      Forward();
+      break;
+      case Direction::backward:
+      Backward();
+      break;
+      case Direction::left:
+      TurnLeft();
+      break;
+      case Direction::right:
+      TurnRight();
+      break;
+      case Direction::backwardAndLeft:
+      BackwardAndTurnLeft();
+      break;
+      case Direction::backwardAndRight:
+      BackwardAndTurnRight();
+      break;
+      case Direction::stop:
+      Stop();
+      break;
+      case Direction::spinCW:
+      SpinCW();
+      break;
+      case Direction::spinCCW:
+      SpinCCW();
+      break;
+    }
+    direction = dir;
+  }
+}
+void scanForObstacles(){
+  changeDirection(Direction::backward);
+  delay(1000);
+  //TODO: TUNE THESE DELAYS
+  changeDirection(Direction::spinCW);
+  delay(1000);
+  double rightVal = getDistanceCm();
+  changeDirection(Direction::spinCCW);
+  delay(2000);
+  double leftVal = getDistanceCm();
+  if(rightVal >= leftVal){
+    changeDirection(Direction::right);
+    delay(2000);
+  }
+  changeDirection(Direction::forward);
+
+}
 
 
 void loop() {
+  
+  changeDirection(Direction::forward);
+
+  if(crashDetection(max_crash_distance_cm * 2)){
+    scanForObstacles();
+  
+
+  }
+
+  /*
   do{
   Forward(); 
-  Serial.print("Running");
   }
   while (crashDetection(max_crash_distance_cm));
 
   do{
-    Backward();
-    delay(1); 
-    TurnRight();
+    TurnRight(); 
   }
   while(!crashDetection(max_crash_distance_cm*2));
-  
+  */
   } 
 
