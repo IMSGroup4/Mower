@@ -387,6 +387,30 @@ void readSerialBus()
     }
   }
 }
+void runOnSerialBus()
+{
+  char data;
+  if(Serial.available() > 0){
+    data = Serial.read();
+    switch(data){
+      case 'w':
+      changeDirection(Direction::forward);
+      break;
+      case 's':
+      changeDirection(Direction::backward);
+      break;
+      case 'a':
+      changeDirection(Direction::left);
+      break;
+      case 'd':
+      changeDirection(Direction::right);
+      break;
+      default:
+      break;
+    }
+
+  }
+}
 
 void changeDirection(Direction dir){
   if(dir == direction){
@@ -440,8 +464,8 @@ void scanForObstacles(){
     delay(2000);
   }
   changeDirection(Direction::forward);
-
 }
+
 
 
 void loop() {
