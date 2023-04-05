@@ -124,11 +124,6 @@ double  balance_car_speed_offsets = 0.0;
 float angleServo = 90.0;
 float dt;
 
-long lasttime_angle = 0;
-long lasttime_speed = 0;
-long update_sensor = 0;
-long blink_time = 0;
-long rxruntime = 0;
 long lasttime_receive_cmd = 0;
 long last_Pulse_pos_encoder1 = 0;
 long last_Pulse_pos_encoder2 = 0;
@@ -157,39 +152,9 @@ float RELAX_ANGLE = -1;                    //Natural balance angle,should be adj
 #define JOYSTICK               5
 #define GYRO                   6
 #define SOUND_SENSOR           7
-#define RGBLED                 8
-#define SEVSEG                 9
 #define MOTOR                  10
-#define SERVO                  11
 #define ENCODER                12
-#define IR                     13
-#define IRREMOTE               14
-#define PIRMOTION              15
-#define INFRARED               16
-#define LINEFOLLOWER           17
-#define IRREMOTECODE           18
-#define SHUTTER                20
-#define LIMITSWITCH            21
-#define BUTTON                 22
-#define HUMITURE               23
-#define FLAMESENSOR            24
-#define GASSENSOR              25
-#define COMPASS                26
-#define TEMPERATURE_SENSOR_1   27
-#define DIGITAL                30
-#define ANALOG                 31
-#define PWM                    32
-#define SERVO_PIN              33
-#define TONE                   34
-#define BUTTON_INNER           35
-#define ULTRASONIC_ARDUINO     36
-#define PULSEIN                37
-#define STEPPER                40
-#define LEDMATRIX              41
-#define TIMER                  50
-#define TOUCH_SENSOR           51
-#define JOYSTICK_MOVE          52
-#define COMMON_COMMONCMD       60
+
   //Secondary command
   #define SET_STARTER_MODE     0x10
   #define SET_AURIGA_MODE      0x11
