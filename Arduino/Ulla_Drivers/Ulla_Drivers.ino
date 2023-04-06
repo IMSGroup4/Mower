@@ -69,6 +69,8 @@ enum Direction {
   backwardAndRight,
   spinCW,
   spinCCW,
+  spinCWHalfSpeed,
+  spinCCWHalfSpeed,
   stop
 }direction;
 
@@ -299,6 +301,8 @@ void setup() {
   }
   direction = Direction::stop;
   buzzer.setpin(BUZZER_PORT);
+  gyro.begin();
+  Serial.println(Compass.testConnection());
   //direction = Direction::forward;
 }
 
@@ -306,7 +310,7 @@ int leftCompensation = 10;
 void Forward(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed);
-  Encoder_2.setMotorPwm(moveSpeed);
+  Encoder_2.setMotorPwm(moveSpeed + leftCompensation);
 }
 void Backward(void)
 {
@@ -343,6 +347,14 @@ void SpinCCW(){
   Encoder_1.setMotorPwm(-moveSpeed);
   Encoder_2.setMotorPwm(-moveSpeed);
 }
+void SpinCWHalfSpeed(){
+  Encoder_1.setMotorPwm(moveSpeed/2);
+  Encoder_2.setMotorPwm(moveSpeed/2);
+}
+void SpinCCWHalfSpeed(){
+  Encoder_1.setMotorPwm(-moveSpeed/2);
+  Encoder_2.setMotorPwm(-moveSpeed/2);
+}
 
 void Stop(void){
   Encoder_1.setMotorPwm(0);
@@ -351,6 +363,84 @@ void Stop(void){
 void RAM(void){
   Encoder_1.setMotorPwm(-255);
   Encoder_2.setMotorPwm(255);
+}
+void changeDirection(Direction dir){
+  if(dir == direction){
+    //DO NOTHING
+  }
+  else{
+    switch(dir){
+      case Direction::forward:
+      Forward();
+      break;
+      case Direction::backward:
+      Backward();
+      break;
+      case Direction::left:
+      TurnLeft();
+      break;
+      case Direction::right:
+      TurnRight();
+      break;
+      case Direction::backwardAndLeft:
+      BackwardAndTurnLeft();
+      break;
+      case Direction::backwardAndRight:
+      BackwardAndTurnRight();
+      break;
+      case Direction::stop:
+      Stop();
+      break;
+      case Direction::spinCW:
+      SpinCW();
+      break;
+      case Direction::spinCCW:
+      SpinCCW();
+      break;
+      case Direction::spinCWHalfSpeed:
+      SpinCWHalfSpeed();
+      break;
+      case Direction::spinCCWHalfSpeed:
+      SpinCCWHalfSpeed();
+      break;
+    }
+    direction = dir;
+  }
+}
+
+void SpinCWDeg(int deg){
+  gyro.update();
+  double initial_deg = gyro.getAngleZ();
+  double target_deg = initial_deg + deg;
+  if(target_deg>= 180){
+    double offset = target_deg - 180;
+    target_deg = offset - 180;
+  }
+  double current_deg = gyro.getAngleZ();
+  while((int)target_deg != (int)current_deg){
+    gyro.update();
+    current_deg = gyro.getAngleZ();
+    changeDirection(Direction::spinCW);
+
+}
+changeDirection(Direction::stop);
+}
+void SpinCCWDeg(int deg){
+  gyro.update();
+  double initial_deg = gyro.getAngleZ();
+  double target_deg = initial_deg - deg;
+  if(target_deg<= -180){
+    double offset = target_deg + 180;
+    target_deg = offset - 180;
+  }
+  double current_deg = gyro.getAngleZ();
+  while((int)target_deg != (int)current_deg){
+    gyro.update();
+    current_deg = gyro.getAngleZ();
+    changeDirection(Direction::spinCCW);
+
+}
+changeDirection(Direction::stop);
 }
 
 /**
@@ -412,43 +502,6 @@ void runOnSerialBus()
   }
 }
 
-void changeDirection(Direction dir){
-  if(dir == direction){
-    //DO NOTHING
-  }
-  else{
-    switch(dir){
-      case Direction::forward:
-      Forward();
-      break;
-      case Direction::backward:
-      Backward();
-      break;
-      case Direction::left:
-      TurnLeft();
-      break;
-      case Direction::right:
-      TurnRight();
-      break;
-      case Direction::backwardAndLeft:
-      BackwardAndTurnLeft();
-      break;
-      case Direction::backwardAndRight:
-      BackwardAndTurnRight();
-      break;
-      case Direction::stop:
-      Stop();
-      break;
-      case Direction::spinCW:
-      SpinCW();
-      break;
-      case Direction::spinCCW:
-      SpinCCW();
-      break;
-    }
-    direction = dir;
-  }
-}
 void scanForObstacles(){
   changeDirection(Direction::backward);
   delay(1000);
@@ -469,7 +522,15 @@ void scanForObstacles(){
 
 
 void loop() {
-  
+
+  SpinCCWDeg(90);
+  delay(1000);
+  /*
+  gyro.update();
+  double z_ang = gyro.getAngleZ();
+  Serial.println(z_ang);
+  */
+  /*
   changeDirection(Direction::forward);
 
   if(crashDetection(max_crash_distance_cm * 2)){
@@ -477,6 +538,7 @@ void loop() {
   
 
   }
+  */
 
   /*
   do{
