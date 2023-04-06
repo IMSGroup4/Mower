@@ -11,7 +11,7 @@ Servo servos[12];
 MeDCMotor dc;
 MeTemperature ts;
 MeRGBLed led;
-MeUltrasonicSensor *us = NULL;  //PORT_10
+MeUltrasonicSensor ultraSensor(PORT_7); //PORT_10
 Me7SegmentDisplay seg;
 MePort generalDevice;
 MeLEDMatrix ledMx;
@@ -43,6 +43,36 @@ typedef struct MeModule
   int16_t index;
   float values[3];
 } MeModule;
+
+/*
+struct Driver
+{
+  enum Mode = {
+    Autonomous,
+    Controller,
+    Toddler
+  }Mode;
+  enum STATE = {
+    Driving,
+    Scanning,
+    
+  }State;
+
+}Driver;
+*/
+enum Direction {
+  forward,
+  backward,
+  left,
+  right,
+  backwardAndLeft,
+  backwardAndRight,
+  spinCW,
+  spinCCW,
+  spinCWHalfSpeed,
+  spinCCWHalfSpeed,
+  stop
+}direction;
 
 union
 {
@@ -218,14 +248,32 @@ void setMotorPwm(int16_t pwm);
 void updateSpeed(void);
 
 double getDistanceCm(){
-  return us.distanceCm()
+  double distance = ultraSensor.distanceCm();
+  return distance;
 }
-bool crashDetection(){
-  if(getDistanceCm() <= max_crash_distance_cm){
+bool crashDetection(double limit){
+  
+  if( getDistanceCm()<= limit){
+    //C is a placeholder for a crash symbol
+    //Serial.write("C")
+    //LOCK DRIVING HERE TO AWAIT FURTHER ENVIRONMENTAL INFORMATION
     return true;
   }
   else{
     return false;
+  }
+}
+void crashAvoidance(){
+  Backward();
+  TurnLeft();
+
+}
+void toddlerTime(){
+  if(crashDetection(max_crash_distance_cm)){
+    Backward();
+    Stop();
+    RAM();
+    
   }
 }
 
@@ -251,12 +299,18 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect via USB
   }
+  direction = Direction::stop;
+  buzzer.setpin(BUZZER_PORT);
+  gyro.begin();
+  Serial.println(Compass.testConnection());
+  //direction = Direction::forward;
 }
 
+int leftCompensation = 10;
 void Forward(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed);
-  Encoder_2.setMotorPwm(moveSpeed);
+  Encoder_2.setMotorPwm(moveSpeed + leftCompensation);
 }
 void Backward(void)
 {
@@ -273,6 +327,120 @@ void TurnRight(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed/2);
   Encoder_2.setMotorPwm(moveSpeed);
+}
+void BackwardAndTurnLeft(void)
+{
+  Encoder_1.setMotorPwm(moveSpeed/4);
+  Encoder_2.setMotorPwm(-moveSpeed);
+}
+void BackwardAndTurnRight(void)
+{
+  Encoder_1.setMotorPwm(moveSpeed);
+  Encoder_2.setMotorPwm(-moveSpeed/4);
+}
+
+void SpinCW(){
+  Encoder_1.setMotorPwm(moveSpeed);
+  Encoder_2.setMotorPwm(moveSpeed);
+}
+void SpinCCW(){
+  Encoder_1.setMotorPwm(-moveSpeed);
+  Encoder_2.setMotorPwm(-moveSpeed);
+}
+void SpinCWHalfSpeed(){
+  Encoder_1.setMotorPwm(moveSpeed/2);
+  Encoder_2.setMotorPwm(moveSpeed/2);
+}
+void SpinCCWHalfSpeed(){
+  Encoder_1.setMotorPwm(-moveSpeed/2);
+  Encoder_2.setMotorPwm(-moveSpeed/2);
+}
+
+void Stop(void){
+  Encoder_1.setMotorPwm(0);
+  Encoder_2.setMotorPwm(0);
+}
+void RAM(void){
+  Encoder_1.setMotorPwm(-255);
+  Encoder_2.setMotorPwm(255);
+}
+void changeDirection(Direction dir){
+  if(dir == direction){
+    //DO NOTHING
+  }
+  else{
+    switch(dir){
+      case Direction::forward:
+      Forward();
+      break;
+      case Direction::backward:
+      Backward();
+      break;
+      case Direction::left:
+      TurnLeft();
+      break;
+      case Direction::right:
+      TurnRight();
+      break;
+      case Direction::backwardAndLeft:
+      BackwardAndTurnLeft();
+      break;
+      case Direction::backwardAndRight:
+      BackwardAndTurnRight();
+      break;
+      case Direction::stop:
+      Stop();
+      break;
+      case Direction::spinCW:
+      SpinCW();
+      break;
+      case Direction::spinCCW:
+      SpinCCW();
+      break;
+      case Direction::spinCWHalfSpeed:
+      SpinCWHalfSpeed();
+      break;
+      case Direction::spinCCWHalfSpeed:
+      SpinCCWHalfSpeed();
+      break;
+    }
+    direction = dir;
+  }
+}
+
+void SpinCWDeg(int deg){
+  gyro.update();
+  double initial_deg = gyro.getAngleZ();
+  double target_deg = initial_deg + deg;
+  if(target_deg>= 180){
+    double offset = target_deg - 180;
+    target_deg = offset - 180;
+  }
+  double current_deg = gyro.getAngleZ();
+  while((int)target_deg != (int)current_deg){
+    gyro.update();
+    current_deg = gyro.getAngleZ();
+    changeDirection(Direction::spinCW);
+
+}
+changeDirection(Direction::stop);
+}
+void SpinCCWDeg(int deg){
+  gyro.update();
+  double initial_deg = gyro.getAngleZ();
+  double target_deg = initial_deg - deg;
+  if(target_deg<= -180){
+    double offset = target_deg + 180;
+    target_deg = offset - 180;
+  }
+  double current_deg = gyro.getAngleZ();
+  while((int)target_deg != (int)current_deg){
+    gyro.update();
+    current_deg = gyro.getAngleZ();
+    changeDirection(Direction::spinCCW);
+
+}
+changeDirection(Direction::stop);
 }
 
 /**
@@ -309,11 +477,79 @@ void readSerialBus()
     }
   }
 }
+void runOnSerialBus()
+{
+  char data;
+  if(Serial.available() > 0){
+    data = Serial.read();
+    switch(data){
+      case 'w':
+      changeDirection(Direction::forward);
+      break;
+      case 's':
+      changeDirection(Direction::backward);
+      break;
+      case 'a':
+      changeDirection(Direction::left);
+      break;
+      case 'd':
+      changeDirection(Direction::right);
+      break;
+      default:
+      break;
+    }
+
+  }
+}
+
+void scanForObstacles(){
+  changeDirection(Direction::backward);
+  delay(1000);
+  //TODO: TUNE THESE DELAYS
+  changeDirection(Direction::spinCW);
+  delay(1000);
+  double rightVal = getDistanceCm();
+  changeDirection(Direction::spinCCW);
+  delay(2000);
+  double leftVal = getDistanceCm();
+  if(rightVal >= leftVal){
+    changeDirection(Direction::right);
+    delay(2000);
+  }
+  changeDirection(Direction::forward);
+}
 
 
 
 void loop() {
-  readSerialBus()
+
+  SpinCCWDeg(90);
+  delay(1000);
+  /*
+  gyro.update();
+  double z_ang = gyro.getAngleZ();
+  Serial.println(z_ang);
+  */
+  /*
+  changeDirection(Direction::forward);
+
+  if(crashDetection(max_crash_distance_cm * 2)){
+    scanForObstacles();
   
+
+  }
+  */
+
+  /*
+  do{
+  Forward(); 
+  }
+  while (crashDetection(max_crash_distance_cm));
+
+  do{
+    TurnRight(); 
+  }
+  while(!crashDetection(max_crash_distance_cm*2));
+  */
   } 
 
