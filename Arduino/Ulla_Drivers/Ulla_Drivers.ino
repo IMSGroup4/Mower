@@ -546,7 +546,8 @@ void scanForObstacles(){
 
 void loop() {
 
-  grayscaleTest();
+  double distance = getDistanceCm();
+  Serial.println(distance);
   /*
   gyro.update();
   double z_ang = gyro.getAngleZ();

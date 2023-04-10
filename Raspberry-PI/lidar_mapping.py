@@ -2,6 +2,11 @@ import math
 from matplotlib import pyplot as plt
 from shapely.geometry import Point
 from operator import itemgetter
+import os
+
+def loadMultipleFiles():
+    pass
+
 
 def loadData():
     data_file = open("lidar_data_iter_measures.txt")
@@ -44,6 +49,12 @@ def plotPoints(points):
         
 
 def main():
+    path = "LidarTesting/lidar_test"
+    for root, dirs,files in os.walk(path, topdown=False):
+        for name in files:
+            print(name)
+            #THIS WORKS USE THIS TO OPEN THE TEST FILES
+    """
     raw_data = loadData()
     print(len(raw_data))
     culled_data = cullData(raw_data)
@@ -51,7 +62,7 @@ def main():
     culled_data = sortByAngle(culled_data)
     vectors = calculateVectors(culled_data)
     plotPoints(vectors)
-    
+    """
 
 if __name__ == "__main__":
     main()
