@@ -41,7 +41,15 @@ def plotPoints(points):
     ax = plt.gca()
     ax.set_aspect('equal', adjustable='box')
     plt.show()
-        
+
+def printPointsToTxt(points, filename):
+
+    fixedFileName = filename + ".txt"
+    fileobject = open(fixedFileName, "w+")
+    for point in points:
+        fileobject.write("({}, {}) \n".format(point.x, point.y))
+    fileobject.close()
+
 
 def main():
     raw_data = loadData()
@@ -50,7 +58,7 @@ def main():
     print(len(culled_data))
     culled_data = sortByAngle(culled_data)
     vectors = calculateVectors(culled_data)
-    plotPoints(vectors)
+    printPointsToTxt(vectors, "bajs")
     
 
 if __name__ == "__main__":
