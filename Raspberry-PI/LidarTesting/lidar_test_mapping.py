@@ -96,6 +96,14 @@ def theReaping(data):
                 deg +=1
     return reaped_data
 
+
+def printPointsToTxt(points, filename):
+
+    fixedFileName = filename + ".txt"
+    fileobject = open(fixedFileName, "w+")
+    for point in points:
+        fileobject.write("({}, {}) \n".format(point.x, point.y))
+    fileobject.close()
         
 
 def main():
@@ -114,6 +122,7 @@ def main():
     print(len(reaped_data[0]))
     vector_list = []
     multiplier = 0
+    """
     for data in reaped_data:
         vectors = calculateVectorsWithOffset(data,multiplier)
         plt.plot(multiplier,0, marker = "o", c="green")
@@ -121,6 +130,8 @@ def main():
         multiplier += 200
     print(len(vector_list))
     plotPoints(vector_list)
+    """
+    printPointsToTxt(calculateVectors(reaped_data[0]),"bajs")
 
     
     
