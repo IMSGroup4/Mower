@@ -42,6 +42,7 @@ def evaluate_findings(findings):
         
 
 def main():
-    pass
+    objectbro = forward_detection()
+    evaluate_findings(objectbro)
 if __name__ == "__main__":
     main()
