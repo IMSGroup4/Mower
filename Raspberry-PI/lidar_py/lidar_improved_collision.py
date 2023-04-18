@@ -19,9 +19,9 @@ def forward_detection():
         elif len(findings) >= 10:
             break
 
-    lidar.stop()
-    lidar.stop_motor()
-    lidar.disonnect()
+    #lidar.stop()
+    #lidar.stop_motor()
+    #lidar.disonnect()
     return findings
 
 def evaluate_findings(findings):
