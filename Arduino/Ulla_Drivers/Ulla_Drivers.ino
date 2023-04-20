@@ -29,7 +29,7 @@ MeTouchSensor touchSensor;
 Me4Button buttonSensor;
 MeEncoderOnBoard Encoder_1(SLOT1);
 MeEncoderOnBoard Encoder_2(SLOT2);
-MeLineFollower line(PORT_9);
+MeLineFollower line(PORT_6);
 MeEncoderMotor encoders[2];
 MePm25Sensor *pm25sensor = NULL;
 MeSmartServo *mysmartservo = NULL;
@@ -243,6 +243,12 @@ float RELAX_ANGLE = -1;                    //Natural balance angle,should be adj
   #define ENCODER_BOARD_CAR_POS_MOTION     0x05
 
 
+struct DriveInformation{
+  enum STATE = {SET_MOTOR, SPIN};
+  leftMotor = 0;
+  rightMotor = 0;
+}driveInformation;
+
 void setMotorPwm(int16_t pwm);
 
 void updateSpeed(void);
@@ -448,6 +454,29 @@ changeDirection(Direction::stop);
  * it also responds using UART with the command that was run as feedback
  * 
  */
+
+void grayscaleTest(){
+  int sensorState = line.readSensors();
+  switch (sensorState)
+  {
+  case S1_IN_S2_IN:
+    Serial.println("BOTH SENSORS ON LINE");
+    break;
+  case S1_IN_S2_OUT:
+    Serial.println("SENSOR 2 IS OUTSIDE OF BLACK LINE");
+    break;
+  case S1_OUT_S2_IN:
+    Serial.println("SENSOR 1 IS OUTSIDE OF BLACK LINE");
+    break;
+  case S1_OUT_S2_OUT:
+    Serial.println("BOTH SENSORS ARE OUTSIDE");
+    break;
+
+  default:
+    Serial.println("ERROR");
+    break;
+  }
+}
 void readSerialBus()
 {
   char data;
@@ -523,8 +552,8 @@ void scanForObstacles(){
 
 void loop() {
 
-  SpinCCWDeg(90);
-  delay(1000);
+  double distance = getDistanceCm();
+  Serial.println(distance);
   /*
   gyro.update();
   double z_ang = gyro.getAngleZ();
