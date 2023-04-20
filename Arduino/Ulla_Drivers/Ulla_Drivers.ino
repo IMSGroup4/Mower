@@ -243,6 +243,12 @@ float RELAX_ANGLE = -1;                    //Natural balance angle,should be adj
   #define ENCODER_BOARD_CAR_POS_MOTION     0x05
 
 
+struct DriveInformation{
+  enum STATE = {SET_MOTOR, SPIN};
+  leftMotor = 0;
+  rightMotor = 0;
+}driveInformation;
+
 void setMotorPwm(int16_t pwm);
 
 void updateSpeed(void);
