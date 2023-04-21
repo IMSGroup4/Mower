@@ -10,7 +10,7 @@
 Servo servos[12];  
 MeDCMotor dc;
 MeTemperature ts;
-MeRGBLed led;
+MeRGBLed led(PORT_3);
 MeUltrasonicSensor ultraSensor(PORT_7); //PORT_10
 Me7SegmentDisplay seg;
 MePort generalDevice;
@@ -242,13 +242,6 @@ float RELAX_ANGLE = -1;                    //Natural balance angle,should be adj
   #define ENCODER_BOARD_SET_CUR_POS_ZERO   0x04
   #define ENCODER_BOARD_CAR_POS_MOTION     0x05
 
-
-struct DriveInformation{
-  enum STATE = {SET_MOTOR, SPIN};
-  leftMotor = 0;
-  rightMotor = 0;
-}driveInformation;
-
 void setMotorPwm(int16_t pwm);
 
 void updateSpeed(void);
@@ -281,6 +274,66 @@ void toddlerTime(){
     RAM();
     
   }
+}
+bool has_motor_control = false;
+bool has_autonamous = false;
+bool has_find_object = false;
+
+
+String readData(){
+  String data;
+  if(Serial.available() > 0){
+    data = Serial.readString();
+    data.trim(); //Remove access symbols at end, might cause issues so be careful
+    return data;
+  }
+  else{
+    return "";
+  }
+}
+
+
+int getDataAmount(String data){
+  int count = 0;
+  for(char c : data){
+    if(c == ','){
+      count++;
+    }
+  }
+  return count +1;
+}
+
+String* parseDataString(String data, int length){
+  String buff = "";
+  String* dataArray = new String[length];
+  int i = 0;
+  for(char c : data){
+    if(c == ','){
+      dataArray[i] = buff;
+      i++;
+      buff = "";
+    }
+    else{
+      buff += c;
+    }
+  }
+  dataArray[length-1] = buff;
+  return dataArray;
+}
+int* dataToIntArray(String* parsedData, int length){
+  int* array = new int[length];
+  for(int i = 0; i < length; i++){
+    array[i] = parsedData[i].toInt();
+  }
+  delete[] parsedData;
+  return array;
+}
+int* getInformation(){
+    String data = readData();
+    int length = getDataAmount(data);
+    String* parsedData = parseDataString(data, length);
+    int* intArray = dataToIntArray(parsedData, length);
+    return intArray;
 }
 
 void setup() {
@@ -446,6 +499,7 @@ void SpinCCWDeg(int deg){
     changeDirection(Direction::spinCCW);
 
 }
+
 changeDirection(Direction::stop);
 }
 
@@ -547,13 +601,69 @@ void scanForObstacles(){
   }
   changeDirection(Direction::forward);
 }
-
-
+int harald, leftMotor, rightMotor, spinDeg;
+int* intArray;
 
 void loop() {
+  
+  if(Serial.available() > 0 ){
+    intArray = getInformation();
+    harald = intArray[0];
+    Serial. (harald);
+    //DO OTHER STUFF
+  }
+  switch (harald) {
+      case 69:
+        has_motor_control = false;
+        has_find_object = false;
+        if(has_autonamous == false){
+          Serial.println("autonomous");
+          has_autonamous = true;
+        }
+        //autonamous_flag = true;
+        //start_autonamous();
+        break;
+      case 420:
+        has_find_object = false;
+        has_autonamous = false;
+        if(has_motor_control == false){
+          has_motor_control = true;
+          }
+        //has_motor_control = false;
+        //motor_control_flag = true;
+        //start_motor_control()
+        break;
+      case 1337:
+        led.setColor(0,255,0);
+        led.show();
+        has_motor_control = false;
+        has_autonamous = false;
+        if(has_find_object == false){
+        Serial.println("find object");
+        has_find_object = true;
+        }
+        Serial.println(spinDeg);
+        spinDeg = intArray[1];
+        if(spinDeg == 0){
+          break;
+        }
+        else if(spinDeg < 0){
+          SpinCCWDeg((-spinDeg) - 5); 
+        }
+        else{
+          SpinCWDeg(spinDeg - 5);
+        }
+        harald = 0;
+        spinDeg = 0;
+        has_find_object = false;
+        //find_object_flag = true;
+        //find_object(spinDeg, motorspeed);
 
-  double distance = getDistanceCm();
-  Serial.println(distance);
+        break;
+      default:
+          //Serial.write("No commands", 1);
+        break;    
+  } 
   /*
   gyro.update();
   double z_ang = gyro.getAngleZ();
