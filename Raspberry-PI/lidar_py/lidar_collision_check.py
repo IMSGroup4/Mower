@@ -15,7 +15,7 @@ for i, scan in enumerate(lidar.iter_measures()):
         #print("scan4",scan[4])
     #investigate values more carefully to find good values for autonomous driving
     if scan[3] != 0 and scan[3] < 200 and (scan[2] <= 30 or scan[2] >= 400):
-        print("Collision flag ULLA")
+        print(f"Collision flag ULLA{scan[2]}")
         time.sleep(5)
 #have to find a effective way of restarting the data collection
 #the buffer is getting absolutely destroyed atm.
