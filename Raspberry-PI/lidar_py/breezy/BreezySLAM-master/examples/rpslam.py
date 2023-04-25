@@ -1,18 +1,20 @@
-
 #!/usr/bin/env python3
 
 '''
 rpslam.py : BreezySLAM Python with SLAMTECH RP A1 Lidar
                  
 Copyright (C) 2018 Simon D. Levy
+
 This code is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as 
 published by the Free Software Foundation, either version 3 of the 
 License, or (at your option) any later version.
+
 This code is distributed in the hope that it will be useful,     
 but WITHOUT ANY WARRANTY without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+
 You should have received a copy of the GNU Lesser General Public License 
 along with this code.  If not, see <http://www.gnu.org/licenses/>.
 '''
@@ -25,11 +27,12 @@ LIDAR_DEVICE            = '/dev/ttyUSB0'
 # Ideally we could use all 250 or so samples that the RPLidar delivers in one 
 # scan, but on slower computers you'll get an empty map and unchanging position
 # at that rate.
-MIN_SAMPLES   = 2
+MIN_SAMPLES   = 200
 
 from breezyslam.algorithms import RMHC_SLAM
 from breezyslam.sensors import RPLidarA1 as LaserModel
 from rplidar import RPLidar as Lidar
+from roboviz import MapVisualizer
 
 if __name__ == '__main__':
 
@@ -40,7 +43,7 @@ if __name__ == '__main__':
     slam = RMHC_SLAM(LaserModel(), MAP_SIZE_PIXELS, MAP_SIZE_METERS)
 
     # Set up a SLAM display
-    #viz = MapVisualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'SLAM')
+    viz = MapVisualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'SLAM')
 
     # Initialize an empty trajectory
     trajectory = []
@@ -82,11 +85,10 @@ if __name__ == '__main__':
 
         # Get current map bytes as grayscale
         slam.getmap(mapbytes)
-        #slam.getpos() works and gives current location now parse the data
-        print(slam.getpos())
+
         # Display map and robot pose, exiting gracefully if user closes it
-        #if not viz.display(x/1000., y/1000., theta, mapbytes):
-         #   exit(0)
+        if not viz.display(x/1000., y/1000., theta, mapbytes):
+            exit(0)
  
     # Shut down the lidar connection
     lidar.stop()
