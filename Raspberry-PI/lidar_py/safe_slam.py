@@ -17,7 +17,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this code.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-MAP_SIZE_PIXELS         = 500
+MAP_SIZE_PIXELS         = 100 
 MAP_SIZE_METERS         = 10
 LIDAR_DEVICE            = '/dev/ttyUSB0'
 
@@ -30,9 +30,7 @@ MIN_SAMPLES   = 2
 from breezyslam.algorithms import RMHC_SLAM
 from breezyslam.sensors import RPLidarA1 as LaserModel
 from rplidar import RPLidar as Lidar
-from rplidar import RPLidarException
 from roboviz import MapVisualizer
-import pygame
 
 if __name__ == '__main__':
 
@@ -43,7 +41,7 @@ if __name__ == '__main__':
     slam = RMHC_SLAM(LaserModel(), MAP_SIZE_PIXELS, MAP_SIZE_METERS)
 
     # Set up a SLAM display
-    viz = MapVisualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'SLAM', show_trajectory=True)
+    viz = MapVisualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'SLAM')
 
     # Initialize an empty trajectory
     trajectory = []
@@ -55,45 +53,41 @@ if __name__ == '__main__':
     iterator = lidar.iter_scans()
 
     # We will use these to store previous scan in case current scan is inadequate
-    previous_distances = 50
-    previous_angles    = 10
+    previous_distances = None
+    previous_angles    = None
 
     # First scan is crap, so ignore it
     next(iterator)
-    width = 1000
-    height = 1000
+
     while True:
-        try:
 
-            # Extract (quality, angle, distance) triples from current scan
-            items = [item for item in next(iterator)]
+        # Extract (quality, angle, distance) triples from current scan
+        items = [item for item in next(iterator)]
 
-            # Extract distances and angles from triples
-            distances = [item[2] for item in items]
-            angles    = [item[1] for item in items]
+        # Extract distances and angles from triples
+        distances = [item[2] for item in items]
+        angles    = [item[1] for item in items]
 
-            # Update SLAM with current Lidar scan and scan angles if adequate
-            if len(distances) > MIN_SAMPLES:
-                slam.update(distances, scan_angles_degrees=angles)
-                previous_distances = distances.copy()
-                previous_angles    = angles.copy()
+        # Update SLAM with current Lidar scan and scan angles if adequate
+        if len(distances) > MIN_SAMPLES:
+            slam.update(distances, scan_angles_degrees=angles)
+            previous_distances = distances.copy()
+            previous_angles    = angles.copy()
 
-            # If not adequate, use previous
-            elif previous_distances is not None:
-                slam.update(previous_distances, scan_angles_degrees=previous_angles)
+        # If not adequate, use previous
+        elif previous_distances is not None:
+            slam.update(previous_distances, scan_angles_degrees=previous_angles)
 
-            # Get current robot position
-            x, y, theta = slam.getpos()
+        # Get current robot position
+        x, y, theta = slam.getpos()
 
-            # Get current map bytes as grayscale
-            slam.getmap(mapbytes)
-            #slam.getpos() works and gives current location now parse the data
-            #print(slam.getpos())
-            # Display map and robot pose, exiting gracefully if user closes it
-            if not viz.display(x/1000., y/1000., theta, mapbytes):
-               exit(0)
-        except RPLidarException:
-            lidar.clean_input()
+        # Get current map bytes as grayscale
+        slam.getmap(mapbytes)
+        #slam.getpos() works and gives current location now parse the data
+        #print(slam.getpos())
+        # Display map and robot pose, exiting gracefully if user closes it
+        if not viz.display(x/1000., y/1000., theta, mapbytes):
+            exit(0)
  
     # Shut down the lidar connection
     lidar.stop()
