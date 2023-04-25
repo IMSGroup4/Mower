@@ -30,6 +30,7 @@ MIN_SAMPLES   = 2
 from breezyslam.algorithms import RMHC_SLAM
 from breezyslam.sensors import RPLidarA1 as LaserModel
 from rplidar import RPLidar as Lidar
+from rplidar import RPLidarException
 import pygame
 
 if __name__ == '__main__':
@@ -63,39 +64,42 @@ if __name__ == '__main__':
     pygame.init()
     display = pygame.display.set_mode((width,height))
     while True:
+        try:
 
-        # Extract (quality, angle, distance) triples from current scan
-        items = [item for item in next(iterator)]
+            # Extract (quality, angle, distance) triples from current scan
+            items = [item for item in next(iterator)]
 
-        # Extract distances and angles from triples
-        distances = [item[2] for item in items]
-        angles    = [item[1] for item in items]
+            # Extract distances and angles from triples
+            distances = [item[2] for item in items]
+            angles    = [item[1] for item in items]
 
-        # Update SLAM with current Lidar scan and scan angles if adequate
-        if len(distances) > MIN_SAMPLES:
-            slam.update(distances, scan_angles_degrees=angles)
-            previous_distances = distances.copy()
-            previous_angles    = angles.copy()
+            # Update SLAM with current Lidar scan and scan angles if adequate
+            if len(distances) > MIN_SAMPLES:
+                slam.update(distances, scan_angles_degrees=angles)
+                previous_distances = distances.copy()
+                previous_angles    = angles.copy()
 
-        # If not adequate, use previous
-        elif previous_distances is not None:
-            slam.update(previous_distances, scan_angles_degrees=previous_angles)
+            # If not adequate, use previous
+            elif previous_distances is not None:
+                slam.update(previous_distances, scan_angles_degrees=previous_angles)
 
-        # Get current robot position
-        x, y, theta = slam.getpos()
+            # Get current robot position
+            x, y, theta = slam.getpos()
 
-        # Get current map bytes as grayscale
-        slam.getmap(mapbytes)
-        #slam.getpos() works and gives current location now parse the data
-        #print(slam.getpos())
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                break
-            pygame.draw.circle(display,(0,255,0),(x,y),10)
-            pygame.display.update()
-        # Display map and robot pose, exiting gracefully if user closes it
-        #if not viz.display(x/1000., y/1000., theta, mapbytes):
-         #   exit(0)
+            # Get current map bytes as grayscale
+            slam.getmap(mapbytes)
+            #slam.getpos() works and gives current location now parse the data
+            #print(slam.getpos())
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    break
+                pygame.draw.circle(display,(0,255,0),(x,y),10)
+                pygame.display.update()
+            # Display map and robot pose, exiting gracefully if user closes it
+            #if not viz.display(x/1000., y/1000., theta, mapbytes):
+            #   exit(0)
+        except RPLidarException:
+            lidar.clear_input()
  
     # Shut down the lidar connection
     lidar.stop()
