@@ -42,9 +42,6 @@ def plotPoints(points):
     ax.set_aspect('equal', adjustable='box')
     plt.show()
 
-
-        
-
 def main():
     raw_data = loadData()
     print(len(raw_data))
