@@ -70,7 +70,7 @@ class Visualizer(object):
         # Store Python ID of figure to detect window close
         self.figid = id(fig)
 
-        fig.canvas.set_window_title('SLAM')
+        fig.canvas.manager.set_window_title('SLAM')
         plt.title(title)
 
         # Use an "artist" to speed up map drawing
