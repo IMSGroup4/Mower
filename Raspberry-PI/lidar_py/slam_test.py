@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 
 '''
@@ -25,12 +24,12 @@ LIDAR_DEVICE            = '/dev/ttyUSB0'
 # Ideally we could use all 250 or so samples that the RPLidar delivers in one 
 # scan, but on slower computers you'll get an empty map and unchanging position
 # at that rate.
-MIN_SAMPLES   = 2
+MIN_SAMPLES   = 200
 
 from breezyslam.algorithms import RMHC_SLAM
 from breezyslam.sensors import RPLidarA1 as LaserModel
 from rplidar import RPLidar as Lidar
-import pygame
+from roboviz import MapVisualizer
 
 if __name__ == '__main__':
 
@@ -41,7 +40,7 @@ if __name__ == '__main__':
     slam = RMHC_SLAM(LaserModel(), MAP_SIZE_PIXELS, MAP_SIZE_METERS)
 
     # Set up a SLAM display
-    #viz = MapVisualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'SLAM')
+    viz = MapVisualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'SLAM')
 
     # Initialize an empty trajectory
     trajectory = []
@@ -53,15 +52,12 @@ if __name__ == '__main__':
     iterator = lidar.iter_scans()
 
     # We will use these to store previous scan in case current scan is inadequate
-    previous_distances = 50
-    previous_angles    = 10
+    previous_distances = None
+    previous_angles    = None
 
     # First scan is crap, so ignore it
     next(iterator)
-    width = 1000
-    height = 1000
-    pygame.init()
-    display = pygame.display.set_mode((width,height))
+
     while True:
 
         # Extract (quality, angle, distance) triples from current scan
@@ -86,16 +82,10 @@ if __name__ == '__main__':
 
         # Get current map bytes as grayscale
         slam.getmap(mapbytes)
-        #slam.getpos() works and gives current location now parse the data
-        #print(slam.getpos())
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                break
-            pygame.draw.circle(display,(0,255,0),(x,y),10)
-            pygame.display.update()
+
         # Display map and robot pose, exiting gracefully if user closes it
-        #if not viz.display(x/1000., y/1000., theta, mapbytes):
-         #   exit(0)
+        if not viz.display(x/1000., y/1000., theta, mapbytes):
+            exit(0)
  
     # Shut down the lidar connection
     lidar.stop()
