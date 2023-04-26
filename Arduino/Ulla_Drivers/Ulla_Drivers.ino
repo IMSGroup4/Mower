@@ -612,6 +612,14 @@ else{
   return false;
 }
 }
+int compensateSpinMotor(int angle, int compensation){
+  if((angle-compensation) < 0){
+    return abs(angle-compensation)
+  }
+  else{
+    return (angle-compensation)
+  }
+}
 
 int harald = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
 int* intArray;
@@ -667,10 +675,10 @@ void loop() {
           break;
         }
         else if(spinDeg < 0){
-          SpinCCWDeg((-spinDeg) - 5); 
+          SpinCCWDeg(compensateSpinMotor((-spinDeg), 5)); 
         }
         else{
-          SpinCWDeg(spinDeg - 5);
+          SpinCWDeg(compensateSpinMotor(spinDeg, 5));
         }
         harald = 0;
         spinDeg = 0;
