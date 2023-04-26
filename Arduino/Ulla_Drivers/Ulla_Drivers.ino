@@ -601,7 +601,19 @@ void scanForObstacles(){
   }
   changeDirection(Direction::forward);
 }
-int harald, leftMotor, rightMotor, spinDeg;
+bool shouldChangeMotorSpeed(int oldL, int oldR, int newL, int newR){
+int leftMotorDiff = abs(oldL-newL);
+int rightMotorDiff = abs(oldR-newR);
+int totalDiff = leftMotorDiff + rightMotorDiff;
+if(totalDiff > 20){
+  return true;
+}
+else{
+  return false;
+}
+}
+
+int harald = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
 int* intArray;
 
 void loop() {
@@ -609,7 +621,7 @@ void loop() {
   if(Serial.available() > 0 ){
     intArray = getInformation();
     harald = intArray[0];
-    Serial. (harald);
+    //Serial. (harald);
     //DO OTHER STUFF
   }
   switch (harald) {
@@ -632,6 +644,13 @@ void loop() {
         //has_motor_control = false;
         //motor_control_flag = true;
         //start_motor_control()
+        if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2]){
+          Encoder_1.setMotorPwm(-leftMotor);
+          Encoder_2.setMotorPwm(rightMotor);
+        }
+        else{
+            //DO NOTHING
+        }
         break;
       case 1337:
         led.setColor(0,255,0);
