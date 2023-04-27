@@ -44,22 +44,6 @@ typedef struct MeModule
   float values[3];
 } MeModule;
 
-/*
-struct Driver
-{
-  enum Mode = {
-    Autonomous,
-    Controller,
-    Toddler
-  }Mode;
-  enum STATE = {
-    Driving,
-    Scanning,
-    
-  }State;
-
-}Driver;
-*/
 enum Direction {
   forward,
   backward,
@@ -107,140 +91,11 @@ int16_t len = 52;
 int16_t servo_pins[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 //Just for Auriga
 int16_t moveSpeed = 180;
-int16_t turnSpeed = 180;
-int16_t minSpeed = 45;
-int16_t factor = 23;
-int16_t distance=0;
-int16_t randnum = 0;                                                                               
-int16_t auriga_power = 0;
-int16_t LineFollowFlag=0;
-#define MOVE_STOP       0x00
-#define MOVE_FORWARD    0x01
-#define MOVE_BACKWARD   0x02
-
-#define BLUETOOTH_MODE                       0x00
-#define AUTOMATIC_OBSTACLE_AVOIDANCE_MODE    0x01
-#define BALANCED_MODE                        0x02
-#define IR_REMOTE_MODE                       0x03
-#define LINE_FOLLOW_MODE                     0x04
-#define MAX_MODE                             0x05
-
-#define POWER_PORT                           A4
-#define BUZZER_PORT                          45
-#define RGBLED_PORT                          44
-
-uint8_t command_index = 0;
-uint8_t auriga_mode = BLUETOOTH_MODE;
-uint8_t index = 0;
-uint8_t dataLen;
-uint8_t modulesLen=0;
-uint8_t irRead = 0;
-uint8_t prevc=0;
-uint8_t keyPressed = KEY_NULL;
-uint8_t serialRead;
-uint8_t buffer[52];
-
-double  lastTime = 0.0;
-double  currentTime = 0.0;
-double  CompAngleY, CompAngleX, GyroXangle;
-double  LastCompAngleY, LastCompAngleX, LastGyroXangle;
-double  last_turn_setpoint_filter = 0.0;
-double  last_speed_setpoint_filter = 0.0;
-double  last_speed_error_filter = 0.0;
-double  speed_Integral_average = 0.0;
-double  angle_speed = 0.0;
-double  balance_car_speed_offsets = 0.0;
 
 double max_crash_distance_cm = 10;
 
 float angleServo = 90.0;
 float dt;
-
-long lasttime_angle = 0;
-long lasttime_speed = 0;
-long update_sensor = 0;
-long blink_time = 0;
-long rxruntime = 0;
-long lasttime_receive_cmd = 0;
-long last_Pulse_pos_encoder1 = 0;
-long last_Pulse_pos_encoder2 = 0;
-
-boolean isStart = false;
-boolean isAvailable = false;
-boolean leftflag;
-boolean rightflag;
-boolean start_flag = false;
-boolean move_flag = false;
-boolean boot_show_flag = true;
-boolean blink_flag = false;
-
-String mVersion = "09.01.016";
-
-
-//////////////////////////////////////////////////////////////////////////////////////
-float RELAX_ANGLE = -1;                    //Natural balance angle,should be adjustment according to your own car
-#define PWM_MIN_OFFSET_BIAS   5
-
-#define VERSION                0
-#define ULTRASONIC_SENSOR      1
-#define TEMPERATURE_SENSOR     2
-#define LIGHT_SENSOR           3
-#define POTENTIONMETER         4
-#define JOYSTICK               5
-#define GYRO                   6
-#define SOUND_SENSOR           7
-#define RGBLED                 8
-#define SEVSEG                 9
-#define MOTOR                  10
-#define SERVO                  11
-#define ENCODER                12
-#define IR                     13
-#define IRREMOTE               14
-#define PIRMOTION              15
-#define INFRARED               16
-#define LINEFOLLOWER           17
-#define IRREMOTECODE           18
-#define SHUTTER                20
-#define LIMITSWITCH            21
-#define BUTTON                 22
-#define HUMITURE               23
-#define FLAMESENSOR            24
-#define GASSENSOR              25
-#define COMPASS                26
-#define TEMPERATURE_SENSOR_1   27
-#define DIGITAL                30
-#define ANALOG                 31
-#define PWM                    32
-#define SERVO_PIN              33
-#define TONE                   34
-#define BUTTON_INNER           35
-#define ULTRASONIC_ARDUINO     36
-#define PULSEIN                37
-#define STEPPER                40
-#define LEDMATRIX              41
-#define TIMER                  50
-#define TOUCH_SENSOR           51
-#define JOYSTICK_MOVE          52
-#define COMMON_COMMONCMD       60
-  //Secondary command
-  #define SET_STARTER_MODE     0x10
-  #define SET_AURIGA_MODE      0x11
-  #define SET_MEGAPI_MODE      0x12
-  #define GET_BATTERY_POWER    0x70
-  #define GET_AURIGA_MODE      0x71
-  #define GET_MEGAPI_MODE      0x72
-#define ENCODER_BOARD          61
-  //Read type
-  #define ENCODER_BOARD_POS    0x01
-  #define ENCODER_BOARD_SPEED  0x02
-
-#define ENCODER_PID_MOTION     62
-  //Secondary command
-  #define ENCODER_BOARD_POS_MOTION         0x01
-  #define ENCODER_BOARD_SPEED_MOTION       0x02
-  #define ENCODER_BOARD_PWM_MOTION         0x03
-  #define ENCODER_BOARD_SET_CUR_POS_ZERO   0x04
-  #define ENCODER_BOARD_CAR_POS_MOTION     0x05
 
 void setMotorPwm(int16_t pwm);
 
@@ -359,7 +214,6 @@ void setup() {
     ; // wait for serial port to connect via USB
   }
   direction = Direction::stop;
-  buzzer.setpin(BUZZER_PORT);
   gyro.begin();
   Serial.println(Compass.testConnection());
   //direction = Direction::forward;
@@ -614,25 +468,25 @@ else{
 }
 int compensateSpinMotor(int angle, int compensation){
   if((angle-compensation) < 0){
-    return abs(angle-compensation)
+    return abs(angle-compensation);
   }
   else{
-    return (angle-compensation)
+    return (angle-compensation);
   }
 }
 
-int harald = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
+int readHeader = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
 int* intArray;
 
 void loop() {
   
   if(Serial.available() > 0 ){
     intArray = getInformation();
-    harald = intArray[0];
+    readHeader = intArray[0];
     //Serial. (harald);
     //DO OTHER STUFF
   }
-  switch (harald) {
+  switch (readHeader) {
       case 69:
         has_motor_control = false;
         has_find_object = false;
@@ -652,7 +506,7 @@ void loop() {
         //has_motor_control = false;
         //motor_control_flag = true;
         //start_motor_control()
-        if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2]){
+        if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2])){
           Encoder_1.setMotorPwm(-leftMotor);
           Encoder_2.setMotorPwm(rightMotor);
         }
@@ -680,7 +534,7 @@ void loop() {
         else{
           SpinCWDeg(compensateSpinMotor(spinDeg, 5));
         }
-        harald = 0;
+        readHeader = 0;
         spinDeg = 0;
         has_find_object = false;
         //find_object_flag = true;
