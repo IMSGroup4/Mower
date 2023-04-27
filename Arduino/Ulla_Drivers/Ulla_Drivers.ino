@@ -6,6 +6,10 @@
 
 //#define DEBUG_INFO
 //#define DEBUG_INFO1
+#define AUTONOMOUS  10
+#define JOYSTICK  15
+#define MOTOR_CONTROL 1
+#define OBJECT_DETECTION  2
 
 Servo servos[12];  
 MeDCMotor dc;
@@ -487,7 +491,7 @@ void loop() {
     //DO OTHER STUFF
   }
   switch (readHeader) {
-      case 69:
+      case AUTONOMOUS:
         has_motor_control = false;
         has_find_object = false;
         if(has_autonamous == false){
@@ -497,7 +501,7 @@ void loop() {
         //autonamous_flag = true;
         //start_autonamous();
         break;
-      case 420:
+      case MOTOR_CONTROL:
         has_find_object = false;
         has_autonamous = false;
         if(has_motor_control == false){
@@ -514,7 +518,7 @@ void loop() {
             //DO NOTHING
         }
         break;
-      case 1337:
+      case OBJECT_DETECTION:
         led.setColor(0,255,0);
         led.show();
         has_motor_control = false;
