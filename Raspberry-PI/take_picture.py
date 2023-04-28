@@ -21,5 +21,5 @@ def send_picture():
 	#	print(image_64)
 	#	sys.stdout = original_stdout
 take_picture()
-time.sleep(4)
-send_picture()
+#time.sleep(4)
+#send_picture()
