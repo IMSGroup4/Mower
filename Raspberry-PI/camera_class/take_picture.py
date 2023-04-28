@@ -13,12 +13,13 @@ class CameraHandler:
 	def object_capture(self, object_x, object_y):
 		self.camera.capture("image.jpg")
 		print("Done.")
+		#delay so raspberry has time to save to image.jpeg
 		time.sleep(1)
 		image = "image.jpg"
-		image_64 = base64.b64encode(open(image,"rb").read())
+		base64_image = base64.b64encode(open(image,"rb").read())
 		api_url = "https://ims-group4-backend.azurewebsites.net/api/obstacles"
-		image_data = {"obstacle":{"image": image_64, "x": object_x, "y": object_y}}
-		response = requests.post(api_url, json=image_data)
+		obstacle_data = {"obstacle": {"base64_image": base64_image, "x": object_x, "y": object_y}}
+		response = requests.post(api_url, json=obstacle_data)
 		print(response.status_code)
 		#Code below will save to txt file so you can test the string
 		#original_stdout = sys.stdout
