@@ -4,8 +4,8 @@ import serial
 import time
 import keyboard
 import curses
-#if serial fail try to change it to /dev/ttyACM0
-ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
+#if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
+ser = serial.Serial("/dev/ttyACM0", 115200, timeout=1)
 
 # Reset the Arduino line. This is key to getting the write to work.
 # Without it, the first few writes don't work.
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 		while True: #wait for PI to send package
 			user_input = get_input()
 			print(user_input)
-			ser.write((user_input.encode()))
+			ser.write((user_input.encode()) *2)
 			#try:
 			#	if keyboard.read_key() == 'w':
 			#		print("pressed W, tell arduino to go forward")
