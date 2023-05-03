@@ -5,7 +5,7 @@ import sys
 import requests
 import json
 
-class CameraHandler:
+class RestAPIHandler:
 	def __init__(self):
 		self.api_url_obstacle = "https://ims-group4-backend.azurewebsites.net/api/obstacles"
 		self.api_url_positions = "https://ims-group4-backend.azurewebsites.net/api/positions"
