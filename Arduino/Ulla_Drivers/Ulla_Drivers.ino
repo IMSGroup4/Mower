@@ -546,6 +546,8 @@ void loop() {
 
         break;
       default:
+        Encoder_1.setMotorPwm(0);
+        Encoder_2.setMotorPwm(0);
           //Serial.write("No commands", 1);
         break;    
   } 
