@@ -25,9 +25,13 @@ def websocket_client():
 			message_recv = websocket.recv()
 			print(f"Received: {message_recv}")
 			data = json.loads(message_recv)
-			print("action:",data["action"])
-			print("x:",data["x"])
-			print("y:",data["y"])
+			data_action = data["action"]
+			if data_action == "joystick":
+				print("wiener butt")
+			elif data_action == "autonamous":
+				print("butt wiener")
+			else:
+				print("chilla")
 			#print(bytes(send_data,'utf-8'))
 			#bytes(send_data,'utf-8')
 			#ser.write(send_data.encode('utf-8'))
