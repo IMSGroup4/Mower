@@ -9,7 +9,7 @@ class RestAPIHandler:
 	def __init__(self):
 		self.api_url_obstacle = "https://ims-group4-backend.azurewebsites.net/api/obstacles"
 		self.api_url_positions = "https://ims-group4-backend.azurewebsites.net/api/positions"
-		self.api_url_surroundings = "https://ims-group4-backend.azurewebsites.net/api/surroundings"
+		self.api_url_surrounding = "https://ims-group4-backend.azurewebsites.net/api/surrounding"
 
 		
 	def obstacle_send(self,base64_image, object_x, object_y):
@@ -22,6 +22,8 @@ class RestAPIHandler:
 		position_array = []
 		position_array.append(position_data)
 		response = requests.post(self.api_url_positions, json=position_array)
+		print(response.status_code)
 
-	def surrounding_send(self, surroundings_array):
-		response = requests.post(self.api_url_surroundings, json=surroundings_array)
+	def surrounding_send(self, surrounding_array):
+		response = requests.post(self.api_url_surrounding, json=surrounding_array)
+		print(response.status_code)
