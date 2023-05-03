@@ -24,8 +24,10 @@ def convert_angle_to_motorspeed(angle, speed):
     pass
 
 def trashpanda_run(joystick_coords):
+    speeds = []
     for item in joystick_coords:
         item_length = math.sqrt(pow(item[0],2) + pow(item[1], 2))
+        big_speed = 180
         direction = 1
         if item[1] < 0:
             direction = -1
@@ -33,14 +35,20 @@ def trashpanda_run(joystick_coords):
         rightMotorDifferential = (1 - leftMotorDifferential)
         leftMotorDifferential *= direction
         rightMotorDifferential *= direction
-        print("LEFT MOTOR:  {}, RIGHT MOTOR:    {}".format(leftMotorDifferential,rightMotorDifferential))
-        
+        #print("LEFT MOTOR:  {}, RIGHT MOTOR:    {}".format(leftMotorDifferential,rightMotorDifferential))
+        speed = int(big_speed * item_length)
+        rightMotor = rightMotorDifferential * speed
+        leftMotor = leftMotorDifferential * speed
+        speeds.append((leftMotor,rightMotor))
+    return speeds
 
 
 
 def main():
     angles = convert_joystick_to_angle(joystick_coords)
-    trashpanda_run(joystick_coords)
+    speeds = trashpanda_run(joystick_coords)
+    for speed in speeds:
+        print("RIGHT MOTOR: {}, LEFT MOTOR {}".format(speed[0], speed[1]))
     #print(angles)
 if __name__ == "__main__":
     main()
