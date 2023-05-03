@@ -47,8 +47,8 @@ def websocket_client():
 			data_action = data["action"]
 			
 			if data_action == "joystick":
-				x = data["x"]
-				y = data["y"]
+				x = round(data["x"],1)
+				y = round(data["y"],1)
 				
 				motorSpeeds = trashpanda_run(x,y)
 				totSpeed = motorSpeeds[0] + motorSpeeds[1]
