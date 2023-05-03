@@ -197,6 +197,7 @@ int* getInformation(){
 
 void setup() {
   Serial.begin(115200);
+  Serial.setTimeout(1);
   
   encoders[0] = MeEncoderMotor(SLOT_1);
   encoders[1] = MeEncoderMotor(SLOT_2);
@@ -494,7 +495,7 @@ void loop() {
   if(Serial.available() > 0 ){
     intArray = getInformation();
     readHeader = intArray[0];
-    Serial.println("GOT INFO");
+    //Serial.println("GOT INFO");
     //Serial. (harald);
     //DO OTHER STUFF
   }
@@ -510,26 +511,56 @@ void loop() {
         //start_autonamous();
         break;
       case 1:
-        Serial.println("ENTERED MOTOR CONTROL");
+        //Serial.println("ENTERED MOTOR CONTROL");
         has_find_object = false;
         has_autonamous = false;
         if(has_motor_control == false){
           has_motor_control = true;
           }
+          bool state_changed = false;
+          int oldR = 0;
+          int oldL = 0;
+          while(!state_changed){
+            if(Serial.available() > 0 ){
+              intArray = getInformation();
+              //Serial.println(intArray[0]);
+              //Serial.println(intArray[1]);
+              //Serial.println(intArray[2]);
+              readHeader = intArray[0];
+              if(readHeader != 1){
+                state_changed = false;
+                Encoder_1.setMotorPwm(0);
+                Encoder_2.setMotorPwm(0);
+              }
+              Serial.println("GOT INFO");
+              //Serial. (harald);
+              //DO OTHER STUFF
+            }
+          leftMotor = intArray[1];
+          rightMotor = intArray[2];
+          //Serial.println(leftMotor);
+          //Serial.println(rightMotor);
+          if((oldL != leftMotor) && (oldR != rightMotor)){
+          Encoder_1.setMotorPwm(-leftMotor);
+          Encoder_2.setMotorPwm(rightMotor);
+          }
+          oldR = rightMotor;
+          oldL = leftMotor;
+          }
         //has_motor_control = false;
         //motor_control_flag = true;
         //start_motor_control()
-        if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2])){
+        //if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2])){
           leftMotor = intArray[1];
           rightMotor = intArray[2];
           //Serial.println(leftMotor);
           //Serial.println(rightMotor);
           Encoder_1.setMotorPwm(-leftMotor);
           Encoder_2.setMotorPwm(rightMotor);
-        }
-        else{
+        //}
+        //else{
             //DO NOTHING
-        }
+        //}
         break;
       case OBJECT_DETECTION:
         led.setColor(0,255,0);
