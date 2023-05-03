@@ -11,20 +11,17 @@ Use this for local testing free from the backend. Structured with simple If-stat
 Server will run forever in terminal if not stopped (ctrl + c)
 :param websocket: the websocket object
 """
+joystick_message = {"action":"joystick","x":-0.9, "y":-0.44,"timestamp":time.time()}
+
 
 async def mock_server(websocket):
-    async for message in websocket: #check every "message" that is sent from the Websocket client
-        message_json = json.loads(message)
+        message_joystick = json.loads(str(joystick_message))
+        print(message_joystick)
+        message_send = input()
+        message_json = json.loads(message_send)
+        websocket.send(message_json)
         print("client sent")
         print(message_json)
-        if message_json[2] == "w":
-            await websocket.send(json.dumps("GO FORWARD"))
-        elif message_json[2] == "s":
-            await websocket.send(json.dumps("GO BACKWARDS"))
-        elif message_json[2] == "a":
-            await websocket.send(json.dumps("GO LEFT"))
-        elif message_json[2] == "d":
-            await websocket.send(json.dumps("GO RIGHT"))
 
 
         
