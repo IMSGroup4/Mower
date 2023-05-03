@@ -17,4 +17,11 @@ class CameraHandler:
 		response = requests.post(self.api_url_obstacle, json=obstacle_data)
 		print(response.status_code)
 
+	def position_send(self,position_x,position_y):
+		position_data = {"position": {"x": position_x ,"y": position_y}}
+		position_array = []
+		position_array.append(position_data)
+		response = requests.post(self.api_url_positions, json=position_array)
 
+	def surrounding_send(self, surroundings_array):
+		response = requests.post(self.api_url_surroundings, json=surroundings_array)
