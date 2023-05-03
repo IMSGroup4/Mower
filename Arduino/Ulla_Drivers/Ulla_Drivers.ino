@@ -460,6 +460,14 @@ void scanForObstacles(){
   changeDirection(Direction::forward);
 }
 bool shouldChangeMotorSpeed(int oldL, int oldR, int newL, int newR){
+//Serial.print("OLD L");
+//Serial.println(oldL);
+//Serial.print("OLD R");
+//Serial.println(oldR);
+//Serial.print("NEW L");
+//Serial.println(newL);
+//Serial.print("NEW R");
+//Serial.println(newR);
 int leftMotorDiff = abs(oldL-newL);
 int rightMotorDiff = abs(oldR-newR);
 int totalDiff = leftMotorDiff + rightMotorDiff;
@@ -483,10 +491,10 @@ int readHeader = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
 int* intArray;
 
 void loop() {
-  
   if(Serial.available() > 0 ){
     intArray = getInformation();
     readHeader = intArray[0];
+    Serial.println("GOT INFO");
     //Serial. (harald);
     //DO OTHER STUFF
   }
@@ -501,7 +509,8 @@ void loop() {
         //autonamous_flag = true;
         //start_autonamous();
         break;
-      case MOTOR_CONTROL:
+      case 1:
+        Serial.println("ENTERED MOTOR CONTROL");
         has_find_object = false;
         has_autonamous = false;
         if(has_motor_control == false){
@@ -511,6 +520,10 @@ void loop() {
         //motor_control_flag = true;
         //start_motor_control()
         if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2])){
+          leftMotor = intArray[1];
+          rightMotor = intArray[2];
+          //Serial.println(leftMotor);
+          //Serial.println(rightMotor);
           Encoder_1.setMotorPwm(-leftMotor);
           Encoder_2.setMotorPwm(rightMotor);
         }
