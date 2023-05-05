@@ -33,8 +33,8 @@ def driveConverter(x,y):
 	if panzerkampfwagen:
 		speed = (big_speed * item_length)
 		if x > 0:
-			rightMotor = -speed
-			leftMotor = speed
+			rightMotor = int((-speed * 0.7))
+			leftMotor = int((speed * 0.7))
 		else:
 			rightMotor = speed
 			leftMotor = -speed
@@ -70,7 +70,7 @@ def websocket_client():
 				totSpeed = motorSpeeds[0] + motorSpeeds[1]
 				run_time = round(time.time() * 1000)
 				print("TIME DIFF:	{}".format((run_time-time_sent)))
-				if (run_time - time_sent) > 40:
+				if (run_time - time_sent) > 75:
 					send_data = f'1,{motorSpeeds[0]},{motorSpeeds[1]}'
 					print("send_data:",str(send_data))
 					ser.write(send_data.encode('utf-8'))
