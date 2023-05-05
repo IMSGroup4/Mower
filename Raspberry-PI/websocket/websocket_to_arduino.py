@@ -8,6 +8,7 @@ import math
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
 ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
 
+#this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
 ser.flushInput()
@@ -18,7 +19,7 @@ websocket_server = "wss://ims-group4-backend.azurewebsites.net/ws/mower"
 mock_server = "ws://localhost:8000"
 
 
-def trashpanda_run(x,y):
+def driveConverter(x,y):
 	item_length = math.sqrt(pow(x,2) + pow(y, 2))
 	big_speed = 180
 	direction = 1
@@ -39,6 +40,7 @@ def trashpanda_run(x,y):
 # This will be tested with the liveserver when the app is ready to send data to the mower.
 def websocket_client():
 	diff_speed = 0
+	time_sent = round(time.time() * 1000)
 	with connect(websocket_server) as websocket:
 		while True:
 			message_recv = websocket.recv()
@@ -50,15 +52,19 @@ def websocket_client():
 				x = round(data["x"],1)
 				y = round(data["y"],1)
 				
-				motorSpeeds = trashpanda_run(x,y)
+				motorSpeeds = driveConverter(x,y)
 				totSpeed = motorSpeeds[0] + motorSpeeds[1]
-				send_data = f'1,{motorSpeeds[0]},{motorSpeeds[1]}'
-				print("send_data:",str(send_data))
-				ser.write(send_data.encode('utf-8'))
-				
-				#recieved_data= ser.readline()
-				#print(recieved_date)
-				print("LeftSpeed = {}, RightSpeed = {}".format(motorSpeeds[0],motorSpeeds[1]))
+				run_time = round(time.time() * 1000)
+				print("TIME DIFF:	{}".format((run_time-time_sent)))
+				if (run_time - time_sent) > 40:
+					send_data = f'1,{motorSpeeds[0]},{motorSpeeds[1]}'
+					print("send_data:",str(send_data))
+					ser.write(send_data.encode('utf-8'))
+					time_sent = run_time
+					
+					#recieved_data= ser.readline()
+					#print(recieved_date)
+					print("LeftSpeed = {}, RightSpeed = {}".format(motorSpeeds[0],motorSpeeds[1]))
 				
 			elif data_action == "autonomous":
 				print("butt wiener")
