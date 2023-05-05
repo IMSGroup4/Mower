@@ -20,19 +20,33 @@ mock_server = "ws://localhost:8000"
 
 
 def driveConverter(x,y):
+	panzerkampfwagen = False
 	item_length = math.sqrt(pow(x,2) + pow(y, 2))
 	big_speed = 180
 	direction = 1
 	if y < 0:
 		direction = -1
-	leftMotorDifferential = abs((x + 1) / 2)
-	rightMotorDifferential = (1 - leftMotorDifferential)
-	leftMotorDifferential *= direction
-	rightMotorDifferential *= direction
-	speed = int(big_speed * item_length)
-	rightMotor = int(rightMotorDifferential * speed)
-	leftMotor = int(leftMotorDifferential * speed)
-	motorSpeeds = [rightMotor,leftMotor]
+	if -0.1 < y < 0.1:
+		panzerkampfwagen = True
+	else:
+		panzerkampfwagen = False
+	if panzerkampfwagen:
+		speed = (big_speed * item_length)
+		if x > 0:
+			rightMotor = -speed
+			leftMotor = speed
+		else:
+			rightMotor = speed
+			leftMotor = -speed
+	else:
+		leftMotorDifferential = abs((x + 1) / 2)
+		rightMotorDifferential = (1 - leftMotorDifferential)
+		leftMotorDifferential *= direction
+		rightMotorDifferential *= direction
+		speed = int(big_speed * item_length)
+		rightMotor = int(rightMotorDifferential * speed)
+		leftMotor = int(leftMotorDifferential * speed)
+		motorSpeeds = [rightMotor,leftMotor]
 	return motorSpeeds
 	
 	
