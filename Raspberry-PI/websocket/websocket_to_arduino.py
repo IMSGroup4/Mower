@@ -46,7 +46,7 @@ def driveConverter(x,y):
 		speed = int(big_speed * item_length)
 		rightMotor = int(rightMotorDifferential * speed)
 		leftMotor = int(leftMotorDifferential * speed)
-		motorSpeeds = [rightMotor,leftMotor]
+	motorSpeeds = [rightMotor,leftMotor]
 	return motorSpeeds
 	
 	
