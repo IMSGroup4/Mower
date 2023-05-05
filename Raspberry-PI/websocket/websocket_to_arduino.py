@@ -6,7 +6,7 @@ import serial
 import math
 
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
-ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
+ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
 
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
