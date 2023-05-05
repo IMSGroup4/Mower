@@ -26,7 +26,7 @@ def driveConverter(x,y):
 	direction = 1
 	if y < 0:
 		direction = -1
-	if -0.2 < y < 0.2:
+	if -0.3 < y < 0.3:
 		panzerkampfwagen = True
 	else:
 		panzerkampfwagen = False
@@ -46,6 +46,11 @@ def driveConverter(x,y):
 		speed = int(big_speed * item_length)
 		rightMotor = int(rightMotorDifferential * speed)
 		leftMotor = int(leftMotorDifferential * speed)
+	if not abs(rightMotor - leftMotor) == 0:
+		if rightMotor < leftMotor:
+			rightMotor += (speed * 0.1)
+		else:
+			leftMotor += (speed * 0.1)
 	motorSpeeds = [rightMotor,leftMotor]
 	return motorSpeeds
 	
