@@ -46,11 +46,17 @@ def driveConverter(x,y):
 		speed = int(big_speed * item_length)
 		rightMotor = int(rightMotorDifferential * speed)
 		leftMotor = int(leftMotorDifferential * speed)
-	if not abs(rightMotor - leftMotor) == 0:
+	if not (rightMotor and leftMotor) == 0:
 		if rightMotor < leftMotor:
-			rightMotor += (speed * 0.1)
+			if y < 0:
+				rightMotor -= (speed * 0.2)
+			else:
+				rightMotor += (speed * 0.2)
 		else:
-			leftMotor += (speed * 0.1)
+			if y < 0:
+				leftMotor -= (speed * 0.2)
+			else:
+				leftMotor += (speed * 0.2)
 	motorSpeeds = [rightMotor,leftMotor]
 	return motorSpeeds
 	
