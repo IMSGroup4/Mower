@@ -26,7 +26,7 @@ def driveConverter(x,y):
 	direction = 1
 	if y < 0:
 		direction = -1
-	if -0.1 < y < 0.1:
+	if -0.2 < y < 0.2:
 		panzerkampfwagen = True
 	else:
 		panzerkampfwagen = False
