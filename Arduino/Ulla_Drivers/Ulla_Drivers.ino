@@ -532,7 +532,7 @@ void loop() {
                 Encoder_1.setMotorPwm(0);
                 Encoder_2.setMotorPwm(0);
               }
-              Serial.println("GOT INFO");
+              //Serial.println("GOT INFO");
               //Serial. (harald);
               //DO OTHER STUFF
             }
@@ -543,20 +543,16 @@ void loop() {
           if((oldL != leftMotor) && (oldR != rightMotor)){
           Encoder_1.setMotorPwm(-leftMotor);
           Encoder_2.setMotorPwm(rightMotor);
-          }
           oldR = rightMotor;
           oldL = leftMotor;
+          } 
           }
         //has_motor_control = false;
         //motor_control_flag = true;
         //start_motor_control()
         //if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2])){
-          leftMotor = intArray[1];
-          rightMotor = intArray[2];
           //Serial.println(leftMotor);
           //Serial.println(rightMotor);
-          Encoder_1.setMotorPwm(-leftMotor);
-          Encoder_2.setMotorPwm(rightMotor);
         //}
         //else{
             //DO NOTHING
