@@ -73,7 +73,7 @@ def websocket_client():
 				totSpeed = motorSpeeds[0] + motorSpeeds[1]
 				run_time = round(time.time() * 1000)
 				print("TIME DIFF:	{}".format((run_time-time_sent)))
-				if (run_time - time_sent) > 40:
+				if (run_time - time_sent) > 55:
 					send_data = f'1,{motorSpeeds[0]},{motorSpeeds[1]}'
 					print("send_data:",str(send_data))
 					ser.write(send_data.encode('utf-8'))
