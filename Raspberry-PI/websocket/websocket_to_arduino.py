@@ -4,10 +4,12 @@ import asyncio
 import time
 import serial
 import math
+from lidar_py.lidar_improved_collision import CollisionDetector
+from camera_class.camera_handler import CameraHandler
 
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
 ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
-
+collisionDetector = CollisionDetector()
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
@@ -17,6 +19,7 @@ time.sleep(2)
 
 websocket_server = "wss://ims-group4-backend.azurewebsites.net/ws/mower"
 mock_server = "ws://localhost:8000"
+camera = CameraHandler()
 
 
 def driveConverter(x,y):
@@ -84,7 +87,17 @@ def websocket_client():
 					print("LeftSpeed = {}, RightSpeed = {}".format(motorSpeeds[0],motorSpeeds[1]))
 				
 			elif data_action == "autonomous":
-				print("butt wiener")
+				send_data = f'10,0'
+				ser.write(send_data.encode('utf-8'))
+				avg_len = 0
+				avg_deg = 0
+				avg_deg, avg_len = CollisionDetector.forward_detection()
+				if avg_len > 0:
+					send_data = f'10,1'
+					ser.write(send_data.encode('utf-8'))
+					send_data = f'10,2,{avg_deg}'
+					ser.write(send_data('utf-8'))
+					camera.object_capture(690,1337)
 			else:
 				print("chilla")
 			#print(bytes(send_data,'utf-8'))
