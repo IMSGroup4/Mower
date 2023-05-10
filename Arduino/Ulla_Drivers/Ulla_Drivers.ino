@@ -94,7 +94,7 @@ MeModule modules[12];
 int16_t len = 52;
 int16_t servo_pins[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 //Just for Auriga
-int16_t moveSpeed = 180;
+int16_t moveSpeed = 100;
 
 double max_crash_distance_cm = 10;
 
@@ -348,7 +348,7 @@ void SpinCCWDeg(int deg){
   double initial_deg = gyro.getAngleZ();
   double target_deg = initial_deg - deg;
   if(target_deg<= -180){
-    double offset = target_deg + 180;
+    double offset = target_deg + 360;
     target_deg = offset - 180;
   }
   double current_deg = gyro.getAngleZ();
@@ -374,15 +374,25 @@ void grayscaleTest(){
   {
   case S1_IN_S2_IN:
     Serial.println("BOTH SENSORS ON LINE");
+    changeDirection(Direction::backward);
+    delay(150);
+    SpinCWDeg(100-5);
     break;
   case S1_IN_S2_OUT:
     Serial.println("SENSOR 2 IS OUTSIDE OF BLACK LINE");
+    changeDirection(Direction::backward);
+    delay(150);
+    SpinCWDeg(45-5);
     break;
   case S1_OUT_S2_IN:
     Serial.println("SENSOR 1 IS OUTSIDE OF BLACK LINE");
+    changeDirection(Direction::backward);
+    delay(150);
+    SpinCCWDeg(45-5);
     break;
   case S1_OUT_S2_OUT:
     Serial.println("BOTH SENSORS ARE OUTSIDE");
+    changeDirection(Direction::forward);
     break;
 
   default:
@@ -492,6 +502,7 @@ int readHeader = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
 int* intArray;
 
 void loop() {
+  //readHeader = 10;
   if(Serial.available() > 0 ){
     intArray = getInformation();
     readHeader = intArray[0];
@@ -500,15 +511,79 @@ void loop() {
     //DO OTHER STUFF
   }
   switch (readHeader) {
-      case AUTONOMOUS:
-        has_motor_control = false;
-        has_find_object = false;
-        if(has_autonamous == false){
-          Serial.println("autonomous");
-          has_autonamous = true;
+      case 10:
+          has_motor_control = false;
+          has_find_object = false;
+          if(has_autonamous == false){
+            Serial.println("autonomous");
+            has_autonamous = true;
+          }
+        bool stateChanged = false;
+        while(!stateChanged){
+          if(Serial.available() > 0 ){
+              intArray = getInformation();
+              readHeader = intArray[0];
+              if(readHeader != 1){
+                stateChanged = true;
+                Encoder_1.setMotorPwm(0);
+                Encoder_2.setMotorPwm(0);
+              }
+          }
+          int autonomousHeader = intArray[1];
+          switch(autonomousHeader){
+            case 0:
+              grayscaleTest();
+              break;
+            case 1:
+              changeDirection(Direction::stop);
+              break;
+            case 2:
+              int spinDegrees = intArray[2];
+              Serial.println(spinDegrees);
+              if(spinDegrees > 0){
+                if(spinDegrees > 10){
+                SpinCWDeg(spinDegrees - 5);
+                }
+                else{
+                  SpinCWDeg(spinDegrees);
+                }
+              }
+              else{
+                if(spinDegrees < -10){
+                SpinCCWDeg(-(spinDegrees+5));
+                }
+                else{
+                  SpinCCWDeg(-spinDegrees);
+                }
+              }
+              intArray[1] = 1;
+              intArray[2] = 0;
+              break;
+          }
+        }
+        /*
+        bool stateChanged = false;
+        while(!stateChanged){
+          if(Serial.available() > 0 ){
+              intArray = getInformation();
+              //Serial.println(intArray[0]);
+              //Serial.println(intArray[1]);
+              //Serial.println(intArray[2]);
+              readHeader = intArray[1];
+              if(readHeader != 0){
+                state_changed = false;
+                Encoder_1.setMotorPwm(0);
+                Encoder_2.setMotorPwm(0);
+              }
+          grayscaleTest();
+        }
+        while(stateChanged){
+          //DO TASK
+          //THEN GO INTO LINE MODE
         }
         //autonamous_flag = true;
         //start_autonamous();
+        */
         break;
       case 1:
         //Serial.println("ENTERED MOTOR CONTROL");

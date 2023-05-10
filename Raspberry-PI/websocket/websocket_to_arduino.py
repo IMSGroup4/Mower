@@ -85,6 +85,8 @@ def websocket_client():
 				
 			elif data_action == "autonomous":
 				print("butt wiener")
+				send_data = f'10,11'
+				ser.write(send_data.encode('utf-8'))
 			else:
 				print("chilla")
 			#print(bytes(send_data,'utf-8'))
