@@ -17,7 +17,8 @@ time.sleep(2)
 
 websocket_server = "wss://ims-group4-backend.azurewebsites.net/ws/mower"
 mock_server = "ws://localhost:8000"
-
+lidar_collision = False
+lidar_collision_variable = None
 
 def driveConverter(x,y):
 	panzerkampfwagen = False
@@ -73,7 +74,7 @@ def websocket_client():
 				totSpeed = motorSpeeds[0] + motorSpeeds[1]
 				run_time = round(time.time() * 1000)
 				print("TIME DIFF:	{}".format((run_time-time_sent)))
-				if (run_time - time_sent) > 65:
+				if (run_time - time_sent) > 75:
 					send_data = f'1,{motorSpeeds[0]},{motorSpeeds[1]}'
 					print("send_data:",str(send_data))
 					ser.write(send_data.encode('utf-8'))
@@ -84,7 +85,20 @@ def websocket_client():
 					print("LeftSpeed = {}, RightSpeed = {}".format(motorSpeeds[0],motorSpeeds[1]))
 				
 			elif data_action == "autonomous":
-				print("butt wiener")
+				send_data = f'10,0'
+				ser.write(send_data.encode('utf-8'))
+				if lidar_collision_flag==true:
+					send_data = f'10,1'
+					ser.write(send_data.encode('utf-8'))
+					while True:
+						if lidar_collision_variable != None:
+							send_data = f'10,2,{lidar_collision_variable}'
+							ser.write(send_data.encode('utf-8'))
+							lidar_collision_variable = None
+							break
+					
+					
+				#lidar check send
 			else:
 				print("chilla")
 			#print(bytes(send_data,'utf-8'))
