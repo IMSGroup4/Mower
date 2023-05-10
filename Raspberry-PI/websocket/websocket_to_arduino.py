@@ -5,9 +5,12 @@ import time
 import serial
 import math
 
-#if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
-ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
+from camera_handler import CameraHandler
+from lidar_improved_collision import CollisionDetector
 
+#if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
+ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
+collisionDetector = CollisionDetector()
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
@@ -17,8 +20,7 @@ time.sleep(2)
 
 websocket_server = "wss://ims-group4-backend.azurewebsites.net/ws/mower"
 mock_server = "ws://localhost:8000"
-lidar_collision = False
-lidar_collision_variable = None
+camera = CameraHandler()
 
 def driveConverter(x,y):
 	panzerkampfwagen = False
@@ -83,22 +85,18 @@ def websocket_client():
 					#recieved_data= ser.readline()
 					#print(recieved_date)
 					print("LeftSpeed = {}, RightSpeed = {}".format(motorSpeeds[0],motorSpeeds[1]))
-				
 			elif data_action == "autonomous":
 				send_data = f'10,0'
 				ser.write(send_data.encode('utf-8'))
-				if lidar_collision_flag==true:
+				avg_len = 0
+				avg_deg = 0
+				avg_deg, avg_len = CollisionDetector.forward_detection()
+				if avg_len > 0:
 					send_data = f'10,1'
 					ser.write(send_data.encode('utf-8'))
-					while True:
-						if lidar_collision_variable != None:
-							send_data = f'10,2,{lidar_collision_variable}'
-							ser.write(send_data.encode('utf-8'))
-							lidar_collision_variable = None
-							break
-					
-					
-				#lidar check send
+					send_data = f'10,2,{avg_deg}'
+					ser.write(send_data('utf-8'))
+					camera.object_capture(690,1337)
 			else:
 				print("chilla")
 			#print(bytes(send_data,'utf-8'))
