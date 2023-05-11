@@ -10,7 +10,7 @@ from lidar_improved_collision import CollisionDetector
 
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
 ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
-collisionDetector = CollisionDetector()
+collisionDetector = CollisionDetector('/dev/ttyUSB0')
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
@@ -90,7 +90,7 @@ def websocket_client():
 				ser.write(send_data.encode('utf-8'))
 				avg_len = 0
 				avg_deg = 0
-				avg_deg, avg_len = CollisionDetector.forward_detection()
+				avg_deg, avg_len = collisionDetector.forward_detection()
 				if avg_len > 0:
 					send_data = f'10,1'
 					ser.write(send_data.encode('utf-8'))
