@@ -7,18 +7,17 @@ import serial
 
 class CollisionDetector:
     def __init__(self, address):
-        self.lidar = RPLidar(address,baudrate=256000)
-        self.lidar.reset()
-        #info = self.lidar.get_info()
-        #print(info)
-
-        #health = self.lidar.get_health()
-        #print(health)
+        #self.address = address
+        self.lidar = RPLidar(address)
+        
+        print("LIDAR CONNECTED")
 
     def forward_detection(self):
         print("Enter forward detection")
         findings = []
         print("findings:", findings)
+        #lidar.reset()
+        print("LIDAR RESET")
         while True:        
             #self.lidar.clean_input()
             #print("Getting info")
@@ -27,18 +26,19 @@ class CollisionDetector:
             #print(info)
             try:
                 for i, scan in enumerate(self.lidar.iter_measures()):
-                    print("INSIDE FOR LOOP")
+                    #print("INSIDE FOR LOOP")
+                    #print(scan)
                     if scan[1] == 0:
                         continue
-                    elif (scan[2] > 335 or scan[2] < 25) and 400 > scan[3] > 0:
-                        print(f"What are you doing stepmotor! Collision ahead {scan}")
+                    elif (scan[2] > 335 or scan[2] < 25) and 200 > scan[3] > 0:
+                        #print(f"What are you doing stepmotor! Collision ahead {scan}")
                         findings.append(scan)
-                    elif len(findings) >= 10:
+                    elif len(findings) >= 2:
                         avg_deg, avg_len = self.evaluate_findings(findings)
                         findings.clear()
-                        self.lidar.reset()
+                        #self.lidar.reset()
                         print("LEFT SCAN")
-                        return avg_deg, avg_len
+                        return round(avg_deg), round(avg_len)
                 print("EXITED FOR LOOP")
             except RPLidarException:
                 print("Cleaning")
@@ -57,6 +57,5 @@ class CollisionDetector:
             distances.append(finding[3])
         avg_deg = sum(degrees) / len(degrees)
         avg_len = sum(distances) / len(distances)
-        
         return avg_deg, avg_len
         

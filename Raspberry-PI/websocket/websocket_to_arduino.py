@@ -9,8 +9,8 @@ from camera_handler import CameraHandler
 from lidar_improved_collision import CollisionDetector
 
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
-ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
-collisionDetector = CollisionDetector('/dev/ttyUSB0')
+ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
+collisionDetector = CollisionDetector('/dev/ttyUSB1')
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
@@ -61,7 +61,7 @@ def driveConverter(x,y):
 def websocket_client():
 	diff_speed = 0
 	time_sent = round(time.time() * 1000)
-	with connect(websocket_server) as websocket:
+	with connect(mock_server) as websocket:
 		while True:
 			message_recv = websocket.recv()
 			print(f"Received: {message_recv}")
@@ -91,12 +91,17 @@ def websocket_client():
 				avg_len = 0
 				avg_deg = 0
 				avg_deg, avg_len = collisionDetector.forward_detection()
+				print("FOUND OBSTACLE {} DEG {} LEN".format(avg_deg,avg_len))
 				if avg_len > 0:
-					send_data = f'10,1'
+					send_data = "10,1"
 					ser.write(send_data.encode('utf-8'))
-					send_data = f'10,2,{avg_deg}'
-					ser.write(send_data('utf-8'))
-					camera.object_capture(690,1337)
+					ser.write(bytes(send_data, 'utf-8'))
+					print("SENT STOP CALL:	{}".format(send_data.encode('utf-8')))
+					time.sleep(1)
+					send_data = f"10,2,{avg_deg}"
+					ser.write(send_data.encode('utf-8'))
+					print("SENT DATA:	{}".format(send_data.encode('utf-8')))
+					#camera.object_capture(690,1337)
 			else:
 				print("chilla")
 			#print(bytes(send_data,'utf-8'))

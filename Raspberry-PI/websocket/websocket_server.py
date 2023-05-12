@@ -22,29 +22,14 @@ LeftSpeed = -81, RightSpeed = -81
 Received: {"action":"joystick","x":-0.04,"y":-0.97,"timestamp":1683272460443}
 """
 
-message_joystick =[{"action":"joystick","x":0,"y":1,"timestamp":time.time()},
-{"action":"joystick","x":-0.06,"y":-0.4,"timestamp":time.time()},
-{"action":"joystick","x":-0.04,"y":-0.51,"timestamp":time.time()},
-{"action":"joystick","x":-0.02,"y":-0.62,"timestamp":time.time()},
-{"action":"joystick","x":-0.01,"y":-0.73,"timestamp":time.time()}]
-
-test_message = {"action":"joystick","x":0,"y":0.5,"timestamp":time.time()}
+test_message = {"action":"autonomous","x":0,"y":0,"timestamp":time.time()}
 async def echo(websocket):
 	while True:
-		#x = round(random.uniform(1,-1),1)
-		#y = round(random.uniform(1,-1),1)
-		for messages in message_joystick:
-			message = json.dumps(test_message)
-			#message = (x,y)
-			await websocket.send((message))
-			print(f"sent coordinates {message}to client")
-			time.sleep(0.2)
-		"""	
 		message = json.dumps(test_message)
-		await websocket.send(message)
-		print(f"sent coordinates {message}to client")
-		time.sleep(0.1)
-		"""
+		await websocket.send((message))
+		print(f"Sent Autonomous flag")
+		time.sleep(100)
+
 async def main():
 	async with websockets.serve(echo, "localhost", 8000):
 		await asyncio.Future() #makes it run forever
