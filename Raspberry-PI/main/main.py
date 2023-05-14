@@ -6,7 +6,7 @@ import serial
 import math
 
 from camera_handler import CameraHandler
-from lidar_improved_collision import CollisionDetector
+from lidar_handler import CollisionDetector
 
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
 ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
