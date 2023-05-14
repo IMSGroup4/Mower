@@ -28,7 +28,7 @@ async def echo(websocket):
 		message = json.dumps(test_message)
 		await websocket.send((message))
 		print(f"Sent Autonomous flag")
-		time.sleep(100)
+		time.sleep(1000000000)
 
 async def main():
 	async with websockets.serve(echo, "localhost", 8000):

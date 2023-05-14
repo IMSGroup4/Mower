@@ -9,8 +9,8 @@ from camera_handler import CameraHandler
 from lidar_improved_collision import CollisionDetector
 
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
-ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
-collisionDetector = CollisionDetector('/dev/ttyUSB1')
+ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
+collisionDetector = CollisionDetector('/dev/ttyUSB0')
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
@@ -18,7 +18,7 @@ ser.flushInput()
 ser.setDTR(True)
 time.sleep(2)
 
-websocket_server = "wss://ims-group4-backend.azurewebsites.net/ws/mower"
+websocket_server = "wss://ims-group4-back-end.azurewebsites.net/ws/mower"
 mock_server = "ws://localhost:8000"
 camera = CameraHandler()
 
@@ -61,9 +61,15 @@ def driveConverter(x,y):
 def websocket_client():
 	diff_speed = 0
 	time_sent = round(time.time() * 1000)
-	with connect(mock_server) as websocket:
+	old_message = ""
+	with connect(websocket_server) as websocket:
 		while True:
-			message_recv = websocket.recv()
+			try:
+				message_recv = websocket.recv(timeout=1)
+				old_message = message_recv
+			except TimeoutError:
+				message_recv = old_message
+			
 			print(f"Received: {message_recv}")
 			data = json.loads(message_recv)
 			data_action = data["action"]
@@ -88,6 +94,7 @@ def websocket_client():
 			elif data_action == "autonomous":
 				send_data = f'10,0'
 				ser.write(send_data.encode('utf-8'))
+				print("STARTED SOME SHIT")
 				avg_len = 0
 				avg_deg = 0
 				avg_deg, avg_len = collisionDetector.forward_detection()
@@ -95,12 +102,25 @@ def websocket_client():
 				if avg_len > 0:
 					send_data = "10,1"
 					ser.write(send_data.encode('utf-8'))
-					ser.write(bytes(send_data, 'utf-8'))
 					print("SENT STOP CALL:	{}".format(send_data.encode('utf-8')))
 					time.sleep(1)
 					send_data = f"10,2,{avg_deg}"
 					ser.write(send_data.encode('utf-8'))
 					print("SENT DATA:	{}".format(send_data.encode('utf-8')))
+					time.sleep(1)
+					if avg_deg < 0:
+						send_data = f"10,2,40"
+						ser.write(send_data.encode('utf-8'))
+						print("SENT AVERSION CALL 10,2,40")
+					else:
+						send_data = f"10,2,-40"
+						ser.write(send_data.encode('utf-8'))
+						print("SENT AVERSION CALL 10,2,-40")
+					time.sleep(1)
+					#send_data = "10,0"
+					#ser.write(send_data.encode('utf-8'))
+					#print("MOVING AS NORMAL")
+
 					#camera.object_capture(690,1337)
 			else:
 				print("chilla")

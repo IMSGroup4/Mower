@@ -19,7 +19,7 @@ class CollisionDetector:
         #lidar.reset()
         print("LIDAR RESET")
         while True:        
-            #self.lidar.clean_input()
+            self.lidar.clean_input()
             #print("Getting info")
             #info = self.lidar.get_info()
             print("Entering for loop")
@@ -30,17 +30,19 @@ class CollisionDetector:
                     #print(scan)
                     if scan[1] == 0:
                         continue
-                    elif (scan[2] > 335 or scan[2] < 25) and 200 > scan[3] > 0:
+                    elif (scan[2] > 335 or scan[2] < 25) and 300 > scan[3] > 0:
                         #print(f"What are you doing stepmotor! Collision ahead {scan}")
                         findings.append(scan)
-                    elif len(findings) >= 2:
+                    elif len(findings) >= 10:
                         avg_deg, avg_len = self.evaluate_findings(findings)
                         findings.clear()
                         #self.lidar.reset()
                         print("LEFT SCAN")
                         return round(avg_deg), round(avg_len)
                 print("EXITED FOR LOOP")
-            except RPLidarException:
+            except Exception as e:
+                if e is KeyboardInterrupt:
+                    sys.exit()
                 print("Cleaning")
                 self.lidar.clean_input()
 
