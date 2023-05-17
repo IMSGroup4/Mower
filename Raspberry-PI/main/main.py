@@ -4,13 +4,16 @@ import asyncio
 import time
 import serial
 import math
+from rplidar import RPLidar
+
 
 from camera_handler import CameraHandler
 from lidar_handler import CollisionDetector
 
 #if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
 ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
-collisionDetector = CollisionDetector('/dev/ttyUSB0')
+lidar = RPLidar('/dev/ttyUSB0')
+collisionDetector = CollisionDetector()
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
@@ -18,9 +21,10 @@ ser.flushInput()
 ser.setDTR(True)
 time.sleep(2)
 
-websocket_server = "wss://ims-group4-back-end.azurewebsites.net/ws/mower"
+websocket_server = "wss://ims-group-4-backend-david.azurewebsites.net/ws/mower"
 mock_server = "ws://localhost:8000"
 camera = CameraHandler()
+
 
 def driveConverter(x,y):
 	panzerkampfwagen = False
@@ -62,17 +66,22 @@ def websocket_client():
 	diff_speed = 0
 	time_sent = round(time.time() * 1000)
 	old_message = ""
+	message_recv = ""
 	with connect(websocket_server) as websocket:
 		while True:
 			try:
 				message_recv = websocket.recv(timeout=1)
+				print(message_recv)
 				old_message = message_recv
 			except TimeoutError:
 				message_recv = old_message
-			
-			print(f"Received: {message_recv}")
-			data = json.loads(message_recv)
-			data_action = data["action"]
+				
+			if len(message_recv) > 0:
+				print(f"Received: {message_recv}")
+				data = json.loads(message_recv)
+				data_action = data["action"]
+			else:
+				data_action = ""
 			
 			if data_action == "joystick":
 				x = round(data["x"],1)
@@ -83,7 +92,7 @@ def websocket_client():
 				run_time = round(time.time() * 1000)
 				print("TIME DIFF:	{}".format((run_time-time_sent)))
 				if (run_time - time_sent) > 75:
-					send_data = f'1,{motorSpeeds[0]},{motorSpeeds[1]}'
+					send_data = f'1,{round(motorSpeeds[0])},{round(motorSpeeds[1])}'
 					print("send_data:",str(send_data))
 					ser.write(send_data.encode('utf-8'))
 					time_sent = run_time
@@ -97,9 +106,16 @@ def websocket_client():
 				print("STARTED SOME SHIT")
 				avg_len = 0
 				avg_deg = 0
-				avg_deg, avg_len = collisionDetector.forward_detection()
+				try:
+					lidar.reset()
+					avg_deg, avg_len = collisionDetector.forward_detection(lidar)
+				except Exception as e:
+					print(e)
+					print("OOPSIE WOOPSIE I DID A FUCKO WUCKO")
 				print("FOUND OBSTACLE {} DEG {} LEN".format(avg_deg,avg_len))
-				if avg_len > 0:
+				if avg_len == 0:
+					pass
+				elif avg_len > 0:
 					send_data = "10,1"
 					ser.write(send_data.encode('utf-8'))
 					print("SENT STOP CALL:	{}".format(send_data.encode('utf-8')))
@@ -120,7 +136,6 @@ def websocket_client():
 					#send_data = "10,0"
 					#ser.write(send_data.encode('utf-8'))
 					#print("MOVING AS NORMAL")
-
 					#camera.object_capture(690,1337)
 			else:
 				print("chilla")
