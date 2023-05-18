@@ -1,0 +1,13 @@
+I got you fam
+# Ange incheckningsmeddelandet för dina ändringar. Rader som inleds
+# med "#" kommer ignoreras, och ett tomt meddelande avbryter incheckningen.
+#
+# På grenen automamous_drive
+# Din gren är à jour med "origin/automamous_drive".
+#
+# Ändringar att checka in:
+#	ändrad:        Raspberry-PI/websocket/__pycache__/lidar_improved_collision.cpython-39.pyc
+#	ändrad:        Raspberry-PI/websocket/lidar_improved_collision.py
+#	ändrad:        Raspberry-PI/websocket/websocket_server.py
+#	ändrad:        Raspberry-PI/websocket/websocket_to_arduino.py
+#

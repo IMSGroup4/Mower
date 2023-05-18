@@ -1,0 +1,5 @@
+0000000000000000000000000000000000000000 ff158385780dfd8dfd4e55d8a96c631f58271bbd arke19 <arke19me@student.ju.se> 1683114604 +0200	branch: Created from HEAD
+ff158385780dfd8dfd4e55d8a96c631f58271bbd 3af163a8012e68fa6453e6ff4a6b1011a75ce0e1 arke19 <arke19me@student.ju.se> 1683114629 +0200	commit: websocket file pushed
+3af163a8012e68fa6453e6ff4a6b1011a75ce0e1 1a6ca2c328ec1e65f94becdf223da9b7226b1327 arke19 <arke19me@student.ju.se> 1683119517 +0200	commit: mockserver sending json joystick data for testing
+1a6ca2c328ec1e65f94becdf223da9b7226b1327 a8fa5910124780a69e348c5d03db5a475d468cba arke19 <arke19me@student.ju.se> 1683121253 +0200	commit: started with arduino bridge from pi
+a8fa5910124780a69e348c5d03db5a475d468cba 4e6416ea915e835c0ae02c9a7d69d2313f0fd880 arke19 <arke19me@student.ju.se> 1683121728 +0200	commit: websocket ready for app communication

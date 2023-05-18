@@ -1,0 +1,10 @@
+0000000000000000000000000000000000000000 1ba12b24feac1ac82c2fc15e22f5e56eae203fac arke19 <arke19me@student.ju.se> 1682406136 +0200	branch: Created from HEAD
+1ba12b24feac1ac82c2fc15e22f5e56eae203fac fb2fbd174bac3b6d111df989d7ac4706d258e602 arke19 <arke19me@student.ju.se> 1682410326 +0200	pull: Fast-forward
+fb2fbd174bac3b6d111df989d7ac4706d258e602 fd600786161e4660bd2a5ebbf5f0f2a5c23ce52b arke19 <arke19me@student.ju.se> 1682411103 +0200	commit: SLAM LOCALIZATION WORKS SORTOF
+fd600786161e4660bd2a5ebbf5f0f2a5c23ce52b 2a30f02f7705b5c705a7c3490b33200aa0bb798b arke19 <arke19me@student.ju.se> 1682412271 +0200	pull: Fast-forward
+2a30f02f7705b5c705a7c3490b33200aa0bb798b 2620f0412895c3b301dad876e18ea939722d7cd4 arke19 <arke19me@student.ju.se> 1682412583 +0200	pull: Fast-forward
+2620f0412895c3b301dad876e18ea939722d7cd4 6138dccffe4a64f81a1d683c7c301123e070ad16 arke19 <arke19me@student.ju.se> 1682413638 +0200	commit: changed slam proto
+6138dccffe4a64f81a1d683c7c301123e070ad16 0d9ca43d6ddb3a4fd8a644f1b6547925580fb9a8 arke19 <arke19me@student.ju.se> 1682414042 +0200	pull: Fast-forward
+0d9ca43d6ddb3a4fd8a644f1b6547925580fb9a8 760b5e800c533ea62c41f6ff88f0250be5f9357f arke19 <arke19me@student.ju.se> 1682426940 +0200	commit: working state sort of
+760b5e800c533ea62c41f6ff88f0250be5f9357f 5bea5421e39cbb0f6e996746ecfedfcdeb669375 arke19 <arke19me@student.ju.se> 1682426965 +0200	pull: Merge made by the 'recursive' strategy.
+5bea5421e39cbb0f6e996746ecfedfcdeb669375 d63dce3dbabca31769f6c5c686fad6d826e1223f arke19 <arke19me@student.ju.se> 1682428726 +0200	commit: safe push before packing up for the day

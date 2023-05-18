@@ -29,7 +29,7 @@ camera = CameraHandler()
 def driveConverter(x,y):
 	panzerkampfwagen = False
 	item_length = math.sqrt(pow(x,2) + pow(y, 2))
-	big_speed = 180
+	big_speed = 220
 	direction = 1
 	if y < 0:
 		direction = -1
