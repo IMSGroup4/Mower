@@ -258,12 +258,12 @@ void BackwardAndTurnRight(void)
 }
 
 void SpinCW(){
-  Encoder_1.setMotorPwm(moveSpeed);
-  Encoder_2.setMotorPwm(moveSpeed);
+  Encoder_1.setMotorPwm(int(moveSpeed*1.5));
+  Encoder_2.setMotorPwm(int(moveSpeed*1.5));
 }
 void SpinCCW(){
-  Encoder_1.setMotorPwm(-moveSpeed);
-  Encoder_2.setMotorPwm(-moveSpeed);
+  Encoder_1.setMotorPwm(int(-moveSpeed * 1.5));
+  Encoder_2.setMotorPwm(int(-moveSpeed* 1.5));
 }
 void SpinCWHalfSpeed(){
   Encoder_1.setMotorPwm(moveSpeed/2);
@@ -347,9 +347,8 @@ void SpinCCWDeg(int deg){
   gyro.update();
   double initial_deg = gyro.getAngleZ();
   double target_deg = initial_deg - deg;
-  if(target_deg<= -180){
-    double offset = target_deg + 360;
-    target_deg = offset - 180;
+  if(target_deg< -180){
+    target_deg += 360;
   }
   double current_deg = gyro.getAngleZ();
   while((int)target_deg != (int)current_deg){
@@ -500,7 +499,6 @@ int compensateSpinMotor(int angle, int compensation){
 
 int readHeader = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
 int* intArray;
-
 void loop() {
   //readHeader = 10;
   if(Serial.available() > 0 ){
@@ -518,13 +516,12 @@ void loop() {
             Serial.println("autonomous");
             has_autonamous = true;
           }
-        bool stateChanged = false;
-        while(!stateChanged){
+        while(has_autonamous){
           if(Serial.available() > 0 ){
               intArray = getInformation();
               readHeader = intArray[0];
-              if(readHeader != 1){
-                stateChanged = true;
+              if(readHeader != 10){
+                has_autonamous = false;
                 Encoder_1.setMotorPwm(0);
                 Encoder_2.setMotorPwm(0);
               }
@@ -561,29 +558,6 @@ void loop() {
               break;
           }
         }
-        /*
-        bool stateChanged = false;
-        while(!stateChanged){
-          if(Serial.available() > 0 ){
-              intArray = getInformation();
-              //Serial.println(intArray[0]);
-              //Serial.println(intArray[1]);
-              //Serial.println(intArray[2]);
-              readHeader = intArray[1];
-              if(readHeader != 0){
-                state_changed = false;
-                Encoder_1.setMotorPwm(0);
-                Encoder_2.setMotorPwm(0);
-              }
-          grayscaleTest();
-        }
-        while(stateChanged){
-          //DO TASK
-          //THEN GO INTO LINE MODE
-        }
-        //autonamous_flag = true;
-        //start_autonamous();
-        */
         break;
       case 1:
         //Serial.println("ENTERED MOTOR CONTROL");
@@ -595,15 +569,12 @@ void loop() {
           bool state_changed = false;
           int oldR = 0;
           int oldL = 0;
-          while(!state_changed){
+          while(has_motor_control){
             if(Serial.available() > 0 ){
               intArray = getInformation();
-              //Serial.println(intArray[0]);
-              //Serial.println(intArray[1]);
-              //Serial.println(intArray[2]);
               readHeader = intArray[0];
               if(readHeader != 1){
-                state_changed = false;
+                has_motor_control = false;
                 Encoder_1.setMotorPwm(0);
                 Encoder_2.setMotorPwm(0);
               }
@@ -622,43 +593,6 @@ void loop() {
           oldL = leftMotor;
           } 
           }
-        //has_motor_control = false;
-        //motor_control_flag = true;
-        //start_motor_control()
-        //if(shouldChangeMotorSpeed(leftMotor, rightMotor, intArray[1], intArray[2])){
-          //Serial.println(leftMotor);
-          //Serial.println(rightMotor);
-        //}
-        //else{
-            //DO NOTHING
-        //}
-        break;
-      case OBJECT_DETECTION:
-        led.setColor(0,255,0);
-        led.show();
-        has_motor_control = false;
-        has_autonamous = false;
-        if(has_find_object == false){
-        Serial.println("find object");
-        has_find_object = true;
-        }
-        Serial.println(spinDeg);
-        spinDeg = intArray[1];
-        if(spinDeg == 0){
-          break;
-        }
-        else if(spinDeg < 0){
-          SpinCCWDeg(compensateSpinMotor((-spinDeg), 5)); 
-        }
-        else{
-          SpinCWDeg(compensateSpinMotor(spinDeg, 5));
-        }
-        readHeader = 0;
-        spinDeg = 0;
-        has_find_object = false;
-        //find_object_flag = true;
-        //find_object(spinDeg, motorspeed);
-
         break;
       default:
         Encoder_1.setMotorPwm(0);
