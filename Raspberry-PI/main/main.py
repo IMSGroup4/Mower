@@ -64,6 +64,7 @@ def driveConverter(x,y):
 # This will be tested with the liveserver when the app is ready to send data to the mower.
 def websocket_client():
 	diff_speed = 0
+	current_position = (0,0)
 	time_sent = round(time.time() * 1000)
 	old_message = ""
 	message_recv = ""
@@ -101,11 +102,13 @@ def websocket_client():
 					#print(recieved_date)
 					print("LeftSpeed = {}, RightSpeed = {}".format(motorSpeeds[0],motorSpeeds[1]))
 			elif data_action == "autonomous":
+				run_clock = time.time * 1000
 				send_data = f'10,0'
 				ser.write(send_data.encode('utf-8'))
 				print("STARTED SOME SHIT")
 				avg_len = 0
 				avg_deg = 0
+				running_speed = 200
 				try:
 					lidar.reset()
 					avg_deg, avg_len = collisionDetector.forward_detection(lidar)
@@ -114,6 +117,14 @@ def websocket_client():
 					print("OOPSIE WOOPSIE I DID A FUCKO WUCKO")
 				print("FOUND OBSTACLE {} DEG {} LEN".format(avg_deg,avg_len))
 				if avg_len == 0:
+					pass
+				elif (run_clock + 500) < (time.time * 1000):
+					#Get Gyro Information from ULLA
+					ser.write(10,3)
+					ser.readline()
+
+					#SEND POSITION HERE!
+
 					pass
 				elif avg_len > 0:
 					send_data = "10,1"
