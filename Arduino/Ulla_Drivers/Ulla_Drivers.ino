@@ -3,6 +3,7 @@
 #include "MeEEPROM.h"
 #include <Wire.h>
 #include <SoftwareSerial.h>
+#include <string.h>
 
 //#define DEBUG_INFO
 //#define DEBUG_INFO1
@@ -326,6 +327,21 @@ void changeDirection(Direction dir){
   }
 }
 
+int* updatePosition(int oldX, int oldY, unsigned long updateTime_ms){
+  int* pos = new int[2];
+  float wheelCirc  = M_PI * 0.0045;
+  gyro.fast_update();
+  double angle = gyro.getAngleZ();
+  float leftMotorSpeed = (int)updateTime_ms * wheelCirc * -(Encoder_1.getCurrentSpeed()/60/1000);
+  float rightMotorSpeed = (int)updateTime_ms *wheelCirc * (Encoder_2.getCurrentSpeed()/60/1000);
+  float avgSpeed = (leftMotorSpeed + rightMotorSpeed)/2;
+  int newX = round(oldX + (cos(radians(angle)) * avgSpeed));
+  int newY = round(oldY + (sin(radians(angle)) * avgSpeed));
+  pos[0] = newX;
+  pos[1] = newY;
+  return pos;
+}
+
 void SpinCWDeg(int deg){
   gyro.update();
   double initial_deg = gyro.getAngleZ();
@@ -339,7 +355,6 @@ void SpinCWDeg(int deg){
     gyro.update();
     current_deg = gyro.getAngleZ();
     changeDirection(Direction::spinCW);
-
 }
 changeDirection(Direction::stop);
 }
@@ -499,6 +514,8 @@ int compensateSpinMotor(int angle, int compensation){
 
 int readHeader = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
 int* intArray;
+int posX, posY = 0;
+unsigned long lastPositionUpdate = millis();
 void loop() {
   //readHeader = 10;
   if(Serial.available() > 0 ){
@@ -529,9 +546,11 @@ void loop() {
           int autonomousHeader = intArray[1];
           switch(autonomousHeader){
             case 0:
+              Serial.println("RUB MY ASS ULLA");
               grayscaleTest();
               break;
             case 1:
+              Serial.println("STOPSTOP");
               changeDirection(Direction::stop);
               break;
             case 2:
@@ -556,6 +575,25 @@ void loop() {
               intArray[1] = 1;
               intArray[2] = 0;
               break;
+
+            case 3:
+              Serial.println(autonomousHeader);
+              //Serial.println("ENTERED THE DRAGON");
+              unsigned long timeSinceLastUpdate = millis() - lastPositionUpdate;
+              int* pos = updatePosition(posX,posY,timeSinceLastUpdate);
+              posX = pos[0];
+              posY = pos[1];
+              lastPositionUpdate = millis();
+              String data = String(posX) + "," + String(posY);
+              //Serial.write(data.toCharArray(), data.length());
+              for(int i = 0; i < data.length(); i++){
+                Serial.print(data[i]);
+                Serial.write(data[i]);
+              }
+              break;
+            default:
+              Serial.println("KUKEN JAG FICK ");
+              Serial.print(autonomousHeader);
           }
         }
         break;
@@ -600,31 +638,5 @@ void loop() {
           //Serial.write("No commands", 1);
         break;    
   } 
-  /*
-  gyro.update();
-  double z_ang = gyro.getAngleZ();
-  Serial.println(z_ang);
-  */
-  /*
-  changeDirection(Direction::forward);
-
-  if(crashDetection(max_crash_distance_cm * 2)){
-    scanForObstacles();
-  
-
-  }
-  */
-
-  /*
-  do{
-  Forward(); 
-  }
-  while (crashDetection(max_crash_distance_cm));
-
-  do{
-    TurnRight(); 
-  }
-  while(!crashDetection(max_crash_distance_cm*2));
-  */
   } 
 
