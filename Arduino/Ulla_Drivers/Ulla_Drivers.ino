@@ -229,59 +229,83 @@ int leftCompensation = 10;
 void Forward(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed);
-  Encoder_2.setMotorPwm(moveSpeed + leftCompensation);
+  Encoder_2.setMotorPwm(moveSpeed);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void Backward(void)
 {
   Encoder_1.setMotorPwm(moveSpeed);
   Encoder_2.setMotorPwm(-moveSpeed);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void TurnLeft(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed);
   Encoder_2.setMotorPwm(moveSpeed/2);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 
 void TurnRight(void)
 {
   Encoder_1.setMotorPwm(-moveSpeed/2);
   Encoder_2.setMotorPwm(moveSpeed);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void BackwardAndTurnLeft(void)
 {
   Encoder_1.setMotorPwm(moveSpeed/4);
   Encoder_2.setMotorPwm(-moveSpeed);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void BackwardAndTurnRight(void)
 {
   Encoder_1.setMotorPwm(moveSpeed);
   Encoder_2.setMotorPwm(-moveSpeed/4);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 
 void SpinCW(){
   Encoder_1.setMotorPwm(int(moveSpeed*1.5));
   Encoder_2.setMotorPwm(int(moveSpeed*1.5));
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void SpinCCW(){
   Encoder_1.setMotorPwm(int(-moveSpeed * 1.5));
   Encoder_2.setMotorPwm(int(-moveSpeed* 1.5));
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void SpinCWHalfSpeed(){
   Encoder_1.setMotorPwm(moveSpeed/2);
   Encoder_2.setMotorPwm(moveSpeed/2);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void SpinCCWHalfSpeed(){
   Encoder_1.setMotorPwm(-moveSpeed/2);
   Encoder_2.setMotorPwm(-moveSpeed/2);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 
 void Stop(void){
   Encoder_1.setMotorPwm(0);
   Encoder_2.setMotorPwm(0);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void RAM(void){
   Encoder_1.setMotorPwm(-255);
   Encoder_2.setMotorPwm(255);
+  Encoder_1.updateSpeed();
+  Encoder_2.updateSpeed();
 }
 void changeDirection(Direction dir){
   if(dir == direction){
@@ -327,13 +351,18 @@ void changeDirection(Direction dir){
   }
 }
 
+
 int* updatePosition(int oldX, int oldY, unsigned long updateTime_ms){
   int* pos = new int[2];
   float wheelCirc  = M_PI * 0.0045;
   gyro.fast_update();
   double angle = gyro.getAngleZ();
-  float leftMotorSpeed = (int)updateTime_ms * wheelCirc * -(Encoder_1.getCurrentSpeed()/60/1000);
-  float rightMotorSpeed = (int)updateTime_ms *wheelCirc * (Encoder_2.getCurrentSpeed()/60/1000);
+  double leftMotorSpeed = (int)updateTime_ms * wheelCirc * -(Encoder_1.getCurPwm()/60/1000);
+  double rightMotorSpeed = (int)updateTime_ms *wheelCirc * (Encoder_2.getCurPwm()/60/1000);
+  Serial.println("LEFT MOTOR SPEED ");
+  Serial.println(Encoder_1.getCurrentSpeed());
+  Serial.println("RIGHT MOTOR SPEED ");
+  Serial.println(Encoder_2.getCurrentSpeed());
   float avgSpeed = (leftMotorSpeed + rightMotorSpeed)/2;
   int newX = round(oldX + (cos(radians(angle)) * avgSpeed));
   int newY = round(oldY + (sin(radians(angle)) * avgSpeed));
@@ -387,25 +416,25 @@ void grayscaleTest(){
   switch (sensorState)
   {
   case S1_IN_S2_IN:
-    Serial.println("BOTH SENSORS ON LINE");
+    //Serial.println("BOTH SENSORS ON LINE");
     changeDirection(Direction::backward);
     delay(150);
     SpinCWDeg(100-5);
     break;
   case S1_IN_S2_OUT:
-    Serial.println("SENSOR 2 IS OUTSIDE OF BLACK LINE");
+    //Serial.println("SENSOR 2 IS OUTSIDE OF BLACK LINE");
     changeDirection(Direction::backward);
     delay(150);
     SpinCWDeg(45-5);
     break;
   case S1_OUT_S2_IN:
-    Serial.println("SENSOR 1 IS OUTSIDE OF BLACK LINE");
+    //Serial.println("SENSOR 1 IS OUTSIDE OF BLACK LINE");
     changeDirection(Direction::backward);
     delay(150);
     SpinCCWDeg(45-5);
     break;
   case S1_OUT_S2_OUT:
-    Serial.println("BOTH SENSORS ARE OUTSIDE");
+    //Serial.println("BOTH SENSORS ARE OUTSIDE");
     changeDirection(Direction::forward);
     break;
 
@@ -541,18 +570,35 @@ void loop() {
                 has_autonamous = false;
                 Encoder_1.setMotorPwm(0);
                 Encoder_2.setMotorPwm(0);
+                Encoder_1.updateSpeed();
+                Encoder_2.updateSpeed();
               }
           }
           int autonomousHeader = intArray[1];
           switch(autonomousHeader){
             case 0:
-              Serial.println("RUB MY ASS ULLA");
               grayscaleTest();
               break;
             case 1:
               Serial.println("STOPSTOP");
               changeDirection(Direction::stop);
               break;
+            
+            case 3:
+              unsigned long timeSinceLastUpdate = millis() - lastPositionUpdate;
+              int* pos = updatePosition(posX,posY,timeSinceLastUpdate);
+              posX = pos[0];
+              posY = pos[1];
+              lastPositionUpdate = millis();
+              String data = String(posX) + "," + String(posY);
+              //Serial.write(data.toCharArray(), data.length());
+              for(int i = 0; i < data.length(); i++){
+                //Serial.print(data[i]);
+                //Serial.write(data[i]);
+              }
+              intArray[1] = 0;
+              break;
+            
             case 2:
               int spinDegrees = intArray[2];
               Serial.println(spinDegrees);
@@ -576,23 +622,7 @@ void loop() {
               intArray[2] = 0;
               break;
 
-            case 3:
-              Serial.println(autonomousHeader);
-              //Serial.println("ENTERED THE DRAGON");
-              unsigned long timeSinceLastUpdate = millis() - lastPositionUpdate;
-              int* pos = updatePosition(posX,posY,timeSinceLastUpdate);
-              posX = pos[0];
-              posY = pos[1];
-              lastPositionUpdate = millis();
-              String data = String(posX) + "," + String(posY);
-              //Serial.write(data.toCharArray(), data.length());
-              for(int i = 0; i < data.length(); i++){
-                Serial.print(data[i]);
-                Serial.write(data[i]);
-              }
-              break;
             default:
-              Serial.println("KUKEN JAG FICK ");
               Serial.print(autonomousHeader);
           }
         }
@@ -615,6 +645,8 @@ void loop() {
                 has_motor_control = false;
                 Encoder_1.setMotorPwm(0);
                 Encoder_2.setMotorPwm(0);
+                Encoder_1.updateSpeed();
+                Encoder_2.updateSpeed();
               }
               //Serial.println("GOT INFO");
               //Serial. (harald);
@@ -627,6 +659,8 @@ void loop() {
           if((oldL != leftMotor) && (oldR != rightMotor)){
           Encoder_1.setMotorPwm(-leftMotor);
           Encoder_2.setMotorPwm(rightMotor);
+          Encoder_1.updateSpeed();
+          Encoder_2.updateSpeed();
           oldR = rightMotor;
           oldL = leftMotor;
           } 
@@ -635,6 +669,8 @@ void loop() {
       default:
         Encoder_1.setMotorPwm(0);
         Encoder_2.setMotorPwm(0);
+        Encoder_1.updateSpeed();
+        Encoder_2.updateSpeed();
           //Serial.write("No commands", 1);
         break;    
   } 
