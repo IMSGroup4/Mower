@@ -1,0 +1,32 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = https://arke19: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@github.com/IMSGroup4/Mower.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+[branch "dev"]
+	remote = origin
+	merge = refs/heads/dev
+[branch "ulla_comms_more_bytes"]
+	remote = origin
+	merge = refs/heads/ulla_comms_more_bytes
+[branch "serial_spindeg"]
+	remote = origin
+	merge = refs/heads/serial_spindeg
+[branch "dev_slam"]
+	remote = origin
+	merge = refs/heads/dev_slam
+[branch "restapi_obstacle"]
+	remote = origin
+	merge = refs/heads/restapi_obstacle
+[branch "dev_websocket"]
+	remote = origin
+	merge = refs/heads/dev_websocket
+[branch "automamous_drive"]
+	remote = origin
+	merge = refs/heads/automamous_drive

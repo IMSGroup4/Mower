@@ -1,0 +1,14 @@
+# pack-refs with: peeled fully-peeled sorted 
+06906a38977fff616882d59f44122952025a2870 refs/remotes/origin/dev
+b3e2c0d7be8354903e1b08060b90f622030d7a74 refs/remotes/origin/dev-BluetoothTesting
+297d2f14e3e21023431d9730127a979f4ef1a772 refs/remotes/origin/dev-ILikeYourMoves
+9b05878b3d0029204ae3e90a4c246e53eda61abc refs/remotes/origin/dev-LidarFeatureExtraction
+39b3d2e42c0f241b4b7fbaa7eb135dbe42b1fcc6 refs/remotes/origin/dev-basic_functionality
+efe057f643e4fdc4bb1ba5ed9c022ab5b9fa1b03 refs/remotes/origin/dev-basic_serial_communication
+eb0a7675498bd57da6b7acaa635416d216f4ce57 refs/remotes/origin/dev-lidar_live_mapping
+a9f9586842adc8fb3d4432b5e23a04e79bf17c7e refs/remotes/origin/dev-raspberry_lidar
+fe54c25718a63f643f0f4ac2deffac1e5c2dfe9b refs/remotes/origin/dev-raspberry_picture_base64
+70e1eeafe05b3a4cc2a9e0adf6e1702203853b05 refs/remotes/origin/dev-simple-autonomy
+a3a972369eb638c44e090626fe3fe19f00f8cf3c refs/remotes/origin/dev-thePurge
+0dce9889310c46406c6b7c4728739e61454659a8 refs/remotes/origin/dev_LidarMapping
+073583bcc1551775b348eabee28ba0636345215b refs/remotes/origin/main
