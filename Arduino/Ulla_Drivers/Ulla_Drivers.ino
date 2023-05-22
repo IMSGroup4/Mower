@@ -32,8 +32,8 @@ MeFlameSensor FlameSensor;
 MeGasSensor GasSensor;
 MeTouchSensor touchSensor;
 Me4Button buttonSensor;
-MeEncoderOnBoard Encoder_1(SLOT1);
-MeEncoderOnBoard Encoder_2(SLOT2);
+MeEncoderOnBoard LeftMotor(SLOT1);
+MeEncoderOnBoard RightMotor(SLOT2);
 MeLineFollower line(PORT_6);
 MeEncoderMotor encoders[2];
 MePm25Sensor *pm25sensor = NULL;
@@ -62,6 +62,9 @@ enum Direction {
   spinCCWHalfSpeed,
   stop
 }direction;
+
+int leftSpeed = 0;
+int rightSpeed = 0;
 
 union
 {
@@ -106,35 +109,8 @@ void setMotorPwm(int16_t pwm);
 
 void updateSpeed(void);
 
-double getDistanceCm(){
-  double distance = ultraSensor.distanceCm();
-  return distance;
-}
-bool crashDetection(double limit){
-  
-  if( getDistanceCm()<= limit){
-    //C is a placeholder for a crash symbol
-    //Serial.write("C")
-    //LOCK DRIVING HERE TO AWAIT FURTHER ENVIRONMENTAL INFORMATION
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-void crashAvoidance(){
-  Backward();
-  TurnLeft();
 
-}
-void toddlerTime(){
-  if(crashDetection(max_crash_distance_cm)){
-    Backward();
-    Stop();
-    RAM();
-    
-  }
-}
+
 bool has_motor_control = false;
 bool has_autonamous = false;
 bool has_find_object = false;
@@ -221,91 +197,91 @@ void setup() {
   }
   direction = Direction::stop;
   gyro.begin();
-  Serial.println(Compass.testConnection());
+  //Serial.println(Compass.testConnection());
   //direction = Direction::forward;
 }
 
 int leftCompensation = 10;
 void Forward(void)
 {
-  Encoder_1.setMotorPwm(-moveSpeed);
-  Encoder_2.setMotorPwm(moveSpeed);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = -moveSpeed;
+  rightSpeed = moveSpeed;
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void Backward(void)
 {
-  Encoder_1.setMotorPwm(moveSpeed);
-  Encoder_2.setMotorPwm(-moveSpeed);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = moveSpeed;
+  rightSpeed = -moveSpeed;
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void TurnLeft(void)
 {
-  Encoder_1.setMotorPwm(-moveSpeed);
-  Encoder_2.setMotorPwm(moveSpeed/2);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = -moveSpeed;
+  rightSpeed = round(moveSpeed/2);
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 
 void TurnRight(void)
 {
-  Encoder_1.setMotorPwm(-moveSpeed/2);
-  Encoder_2.setMotorPwm(moveSpeed);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = round(-moveSpeed/2);
+  rightSpeed = moveSpeed;
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void BackwardAndTurnLeft(void)
 {
-  Encoder_1.setMotorPwm(moveSpeed/4);
-  Encoder_2.setMotorPwm(-moveSpeed);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = round(moveSpeed/4);
+  rightSpeed = -moveSpeed,
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void BackwardAndTurnRight(void)
 {
-  Encoder_1.setMotorPwm(moveSpeed);
-  Encoder_2.setMotorPwm(-moveSpeed/4);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = moveSpeed;
+  rightSpeed = round(-moveSpeed / 4);
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 
 void SpinCW(){
-  Encoder_1.setMotorPwm(int(moveSpeed*1.5));
-  Encoder_2.setMotorPwm(int(moveSpeed*1.5));
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = int(moveSpeed * 1.5);
+  rightSpeed = int(moveSpeed * 1.5);
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void SpinCCW(){
-  Encoder_1.setMotorPwm(int(-moveSpeed * 1.5));
-  Encoder_2.setMotorPwm(int(-moveSpeed* 1.5));
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = int(-moveSpeed * 1.5);
+  rightSpeed = int(-moveSpeed * 1.5);
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void SpinCWHalfSpeed(){
-  Encoder_1.setMotorPwm(moveSpeed/2);
-  Encoder_2.setMotorPwm(moveSpeed/2);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = round(moveSpeed/2);
+  rightSpeed = round(moveSpeed/2);
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void SpinCCWHalfSpeed(){
-  Encoder_1.setMotorPwm(-moveSpeed/2);
-  Encoder_2.setMotorPwm(-moveSpeed/2);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = round(-moveSpeed / 2);
+  rightSpeed = round(-moveSpeed / 2);
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 
 void Stop(void){
-  Encoder_1.setMotorPwm(0);
-  Encoder_2.setMotorPwm(0);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = 0;
+  rightSpeed = 0;
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void RAM(void){
-  Encoder_1.setMotorPwm(-255);
-  Encoder_2.setMotorPwm(255);
-  Encoder_1.updateSpeed();
-  Encoder_2.updateSpeed();
+  leftSpeed = -255;
+  rightSpeed = 255;
+  LeftMotor.setMotorPwm(leftSpeed);
+  RightMotor.setMotorPwm(rightSpeed);
 }
 void changeDirection(Direction dir){
   if(dir == direction){
@@ -352,23 +328,27 @@ void changeDirection(Direction dir){
 }
 
 
-int* updatePosition(int oldX, int oldY, unsigned long updateTime_ms){
-  int* pos = new int[2];
-  float wheelCirc  = M_PI * 0.0045;
+void updatePosition(){
+  //double* pos = new double[3];
+  float wheelCirc  = M_PI * 0.045;
   gyro.fast_update();
-  double angle = gyro.getAngleZ();
-  double leftMotorSpeed = (int)updateTime_ms * wheelCirc * -(Encoder_1.getCurPwm()/60/1000);
-  double rightMotorSpeed = (int)updateTime_ms *wheelCirc * (Encoder_2.getCurPwm()/60/1000);
-  Serial.println("LEFT MOTOR SPEED ");
-  Serial.println(Encoder_1.getCurrentSpeed());
-  Serial.println("RIGHT MOTOR SPEED ");
-  Serial.println(Encoder_2.getCurrentSpeed());
-  float avgSpeed = (leftMotorSpeed + rightMotorSpeed)/2;
-  int newX = round(oldX + (cos(radians(angle)) * avgSpeed));
-  int newY = round(oldY + (sin(radians(angle)) * avgSpeed));
-  pos[0] = newX;
-  pos[1] = newY;
-  return pos;
+  double Sangle = gyro.getAngleZ() +180;
+  double LRPMS = leftSpeed;
+  double RRPMS = rightSpeed;
+  double   = wheelCirc * LRPMS;
+  double rightMotorSpeed = wheelCirc * RRPMS;
+  //Serial.println("LEFT MOTOR SPEED ");
+  //Serial.println(leftSpeed);
+  //Serial.println("RIGHT MOTOR SPEED ");
+  //Serial.println(rightSpeed);
+  double avgSpeed = (leftMotorSpeed + rightMotorSpeed)/2;
+  //int newX = oldX + (cos(radians(Sangle)) * avgSpeed);
+  //double newY = oldY + (sin(radians(Sangle)) * avgSpeed);
+  String sendData = String(-leftSpeed) + "," + String(rightSpeed) + "," + Sangle;
+  
+  Serial.println(sendData);
+  //Serial.write("hej",4);
+
 }
 
 void SpinCWDeg(int deg){
@@ -439,7 +419,7 @@ void grayscaleTest(){
     break;
 
   default:
-    Serial.println("ERROR");
+    //Serial.println("ERROR");
     break;
   }
 }
@@ -497,22 +477,7 @@ void runOnSerialBus()
   }
 }
 
-void scanForObstacles(){
-  changeDirection(Direction::backward);
-  delay(1000);
-  //TODO: TUNE THESE DELAYS
-  changeDirection(Direction::spinCW);
-  delay(1000);
-  double rightVal = getDistanceCm();
-  changeDirection(Direction::spinCCW);
-  delay(2000);
-  double leftVal = getDistanceCm();
-  if(rightVal >= leftVal){
-    changeDirection(Direction::right);
-    delay(2000);
-  }
-  changeDirection(Direction::forward);
-}
+
 bool shouldChangeMotorSpeed(int oldL, int oldR, int newL, int newR){
 //Serial.print("OLD L");
 //Serial.println(oldL);
@@ -541,10 +506,9 @@ int compensateSpinMotor(int angle, int compensation){
   }
 }
 
-int readHeader = 0, leftMotor = 0, rightMotor= 0, spinDeg = 0;
+int readHeader = 0, spinDeg = 0;
 int* intArray;
 int posX, posY = 0;
-unsigned long lastPositionUpdate = millis();
 void loop() {
   //readHeader = 10;
   if(Serial.available() > 0 ){
@@ -559,7 +523,7 @@ void loop() {
           has_motor_control = false;
           has_find_object = false;
           if(has_autonamous == false){
-            Serial.println("autonomous");
+            //Serial.println("autonomous");
             has_autonamous = true;
           }
         while(has_autonamous){
@@ -568,40 +532,33 @@ void loop() {
               readHeader = intArray[0];
               if(readHeader != 10){
                 has_autonamous = false;
-                Encoder_1.setMotorPwm(0);
-                Encoder_2.setMotorPwm(0);
-                Encoder_1.updateSpeed();
-                Encoder_2.updateSpeed();
+                leftSpeed = 0;
+                rightSpeed = 0;
+                LeftMotor.setMotorPwm(leftSpeed);
+                RightMotor.setMotorPwm(rightSpeed);
               }
           }
           int autonomousHeader = intArray[1];
+          //Serial.println(autonomousHeader);
+          updatePosition();
           switch(autonomousHeader){
             case 0:
+              //Serial.println("Starting GrayscaleTest");
               grayscaleTest();
               break;
             case 1:
-              Serial.println("STOPSTOP");
+              //Serial.println("STOPSTOP");
               changeDirection(Direction::stop);
               break;
             
             case 3:
-              unsigned long timeSinceLastUpdate = millis() - lastPositionUpdate;
-              int* pos = updatePosition(posX,posY,timeSinceLastUpdate);
-              posX = pos[0];
-              posY = pos[1];
-              lastPositionUpdate = millis();
-              String data = String(posX) + "," + String(posY);
-              //Serial.write(data.toCharArray(), data.length());
-              for(int i = 0; i < data.length(); i++){
-                //Serial.print(data[i]);
-                //Serial.write(data[i]);
-              }
+              updatePosition();
               intArray[1] = 0;
               break;
             
             case 2:
               int spinDegrees = intArray[2];
-              Serial.println(spinDegrees);
+              //Serial.println(spinDegrees);
               if(spinDegrees > 0){
                 if(spinDegrees > 10){
                 SpinCWDeg(spinDegrees - 5);
@@ -623,7 +580,8 @@ void loop() {
               break;
 
             default:
-              Serial.print(autonomousHeader);
+              //Serial.print(autonomousHeader);
+              break;
           }
         }
         break;
@@ -638,41 +596,38 @@ void loop() {
           int oldR = 0;
           int oldL = 0;
           while(has_motor_control){
+            updatePosition();
             if(Serial.available() > 0 ){
               intArray = getInformation();
               readHeader = intArray[0];
               if(readHeader != 1){
                 has_motor_control = false;
-                Encoder_1.setMotorPwm(0);
-                Encoder_2.setMotorPwm(0);
-                Encoder_1.updateSpeed();
-                Encoder_2.updateSpeed();
+                changeDirection(Direction::stop);
               }
-              //Serial.println("GOT INFO");
-              //Serial. (harald);
-              //DO OTHER STUFF
             }
-          leftMotor = intArray[1];
-          rightMotor = intArray[2];
+          if(intArray[1] == 3){
+            updatePosition();
+              
+          }
+          else{
+          leftSpeed = -intArray[1];
+          rightSpeed = intArray[2];
           //Serial.println(leftMotor);
           //Serial.println(rightMotor);
-          if((oldL != leftMotor) && (oldR != rightMotor)){
-          Encoder_1.setMotorPwm(-leftMotor);
-          Encoder_2.setMotorPwm(rightMotor);
-          Encoder_1.updateSpeed();
-          Encoder_2.updateSpeed();
-          oldR = rightMotor;
-          oldL = leftMotor;
+          if((oldL != leftSpeed) && (oldR != rightSpeed)){
+          LeftMotor.setMotorPwm(leftSpeed);
+          RightMotor.setMotorPwm(rightSpeed);
+          oldR = rightSpeed;
+          oldL = leftSpeed;
           } 
           }
+          }
         break;
+      
       default:
-        Encoder_1.setMotorPwm(0);
-        Encoder_2.setMotorPwm(0);
-        Encoder_1.updateSpeed();
-        Encoder_2.updateSpeed();
+        changeDirection(Direction::stop);
           //Serial.write("No commands", 1);
-        break;    
+        break;
   } 
   } 
 
