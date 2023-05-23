@@ -1,0 +1,21 @@
+0000000000000000000000000000000000000000 06906a38977fff616882d59f44122952025a2870 arke19 <arke19me@student.ju.se> 1681980640 +0200	branch: Created from refs/remotes/origin/dev
+06906a38977fff616882d59f44122952025a2870 7e3e01fbd24375099811364cfadbda5d0a07eb59 arke19 <arke19me@student.ju.se> 1681980754 +0200	commit: test push from raspbery
+7e3e01fbd24375099811364cfadbda5d0a07eb59 610b0b274b29c6ab6a95411596e9c101e9193df1 arke19 <arke19me@student.ju.se> 1682000959 +0200	pull: Fast-forward
+610b0b274b29c6ab6a95411596e9c101e9193df1 ff158385780dfd8dfd4e55d8a96c631f58271bbd arke19 <arke19me@student.ju.se> 1683114427 +0200	pull: Fast-forward
+ff158385780dfd8dfd4e55d8a96c631f58271bbd bc9fef7d3cbead9f7ab28e95360607afcc808f0c arke19 <arke19me@student.ju.se> 1683121958 +0200	pull: Fast-forward
+bc9fef7d3cbead9f7ab28e95360607afcc808f0c 68303c1124db2962cae01c5caf37ffc9da60e091 arke19 <arke19me@student.ju.se> 1683127766 +0200	commit: mockserver testscriptand websocket to app communication works
+68303c1124db2962cae01c5caf37ffc9da60e091 904e3ae33e2b8052e897035d4419ce359a1f22a2 arke19 <arke19me@student.ju.se> 1683130801 +0200	commit: finshed for the day, still bug with app sending data too frequently
+904e3ae33e2b8052e897035d4419ce359a1f22a2 6972f65fd5221ab65ed624afce00c42f3d57255a arke19 <arke19me@student.ju.se> 1683269318 +0200	pull: Fast-forward
+6972f65fd5221ab65ed624afce00c42f3d57255a 9a3f69be97819d0a1943946245588d7eceaadaff arke19 <arke19me@student.ju.se> 1683275847 +0200	commit: adjusted joystick sensetivity
+9a3f69be97819d0a1943946245588d7eceaadaff 3de49c84a214ba09ba66074974ea460c258fa468 arke19 <arke19me@student.ju.se> 1683283780 +0200	commit: app drive almost finished
+3de49c84a214ba09ba66074974ea460c258fa468 b97966cfe86128331eb4ff22a679955df4e74ae6 arke19 <arke19me@student.ju.se> 1683283886 +0200	commit: .
+b97966cfe86128331eb4ff22a679955df4e74ae6 9dbeceaea3c3bc3096c8968ecf1a5be979c886ef arke19 <arke19me@student.ju.se> 1683285472 +0200	pull: Fast-forward
+9dbeceaea3c3bc3096c8968ecf1a5be979c886ef 23bbed5f809db0bbcae81b22b782522965b49456 arke19 <arke19me@student.ju.se> 1683285645 +0200	pull: Fast-forward
+23bbed5f809db0bbcae81b22b782522965b49456 46e72419bb920af8fb819d4c7b0a6a3683f135e0 arke19 <arke19me@student.ju.se> 1683285717 +0200	pull: Fast-forward
+46e72419bb920af8fb819d4c7b0a6a3683f135e0 c1fadf139fb43d9e537b78ee42d52a8e5ea6038a arke19 <arke19me@student.ju.se> 1683286024 +0200	pull: Fast-forward
+c1fadf139fb43d9e537b78ee42d52a8e5ea6038a cbc7e4497aa4110c863d6a718166afc258c102a9 arke19 <arke19me@student.ju.se> 1683286452 +0200	pull: Fast-forward
+cbc7e4497aa4110c863d6a718166afc258c102a9 d2b15602de21b0989897635b522109e58cccdf30 arke19 <arke19me@student.ju.se> 1683287451 +0200	pull: Fast-forward
+d2b15602de21b0989897635b522109e58cccdf30 2ba9028d72fc3921d9856d2704abfe8a4cd7dc7a arke19 <arke19me@student.ju.se> 1683287839 +0200	pull: Fast-forward
+2ba9028d72fc3921d9856d2704abfe8a4cd7dc7a 0f0477391cb89b73e8a6ac9df58c75d98d1c8544 arke19 <arke19me@student.ju.se> 1683288042 +0200	pull: Fast-forward
+0f0477391cb89b73e8a6ac9df58c75d98d1c8544 f2b73b0ba2d1cce5e79aab99e1509ed3c2509258 arke19 <arke19me@student.ju.se> 1683288132 +0200	pull: Fast-forward
+f2b73b0ba2d1cce5e79aab99e1509ed3c2509258 ac880f8d6ca3d7312f86e9b256607744ac7db289 arke19 <arke19me@student.ju.se> 1683288235 +0200	pull: Fast-forward

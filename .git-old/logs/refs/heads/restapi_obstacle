@@ -1,0 +1,4 @@
+0000000000000000000000000000000000000000 d63dce3dbabca31769f6c5c686fad6d826e1223f arke19 <arke19me@student.ju.se> 1682670876 +0200	branch: Created from HEAD
+d63dce3dbabca31769f6c5c686fad6d826e1223f aa3b9bdc73c69cec60d1e33fe098e5c61e265ccd arke19 <arke19me@student.ju.se> 1682670886 +0200	commit: added class for camera
+aa3b9bdc73c69cec60d1e33fe098e5c61e265ccd c56ebb75d5ad415ac25610b0461587c39602e14e arke19 <arke19me@student.ju.se> 1682670941 +0200	commit: added class
+c56ebb75d5ad415ac25610b0461587c39602e14e c6b3a8e76d97d30ccc3901c47456de93f93b8573 arke19 <arke19me@student.ju.se> 1682673127 +0200	commit: improved focus of camera and name convention

@@ -1,0 +1,57 @@
+0000000000000000000000000000000000000000 073583bcc1551775b348eabee28ba0636345215b arke19 <arke19me@student.ju.se> 1681980569 +0200	clone: from https://github.com/IMSGroup4/Mower.git
+073583bcc1551775b348eabee28ba0636345215b 06906a38977fff616882d59f44122952025a2870 arke19 <arke19me@student.ju.se> 1681980640 +0200	checkout: moving from main to dev
+06906a38977fff616882d59f44122952025a2870 7e3e01fbd24375099811364cfadbda5d0a07eb59 arke19 <arke19me@student.ju.se> 1681980754 +0200	commit: test push from raspbery
+7e3e01fbd24375099811364cfadbda5d0a07eb59 7e3e01fbd24375099811364cfadbda5d0a07eb59 arke19 <arke19me@student.ju.se> 1681991238 +0200	checkout: moving from dev to ulla_comms_more_bytes
+7e3e01fbd24375099811364cfadbda5d0a07eb59 0e62b9e0242661875ceefc8ae1ae09b77e771a7d arke19 <arke19me@student.ju.se> 1682000884 +0200	commit: added random spindDeg send from py
+0e62b9e0242661875ceefc8ae1ae09b77e771a7d 7e3e01fbd24375099811364cfadbda5d0a07eb59 arke19 <arke19me@student.ju.se> 1682000956 +0200	checkout: moving from ulla_comms_more_bytes to dev
+7e3e01fbd24375099811364cfadbda5d0a07eb59 610b0b274b29c6ab6a95411596e9c101e9193df1 arke19 <arke19me@student.ju.se> 1682000959 +0200	pull: Fast-forward
+610b0b274b29c6ab6a95411596e9c101e9193df1 610b0b274b29c6ab6a95411596e9c101e9193df1 arke19 <arke19me@student.ju.se> 1682243309 +0200	checkout: moving from dev to serial_spindeg
+610b0b274b29c6ab6a95411596e9c101e9193df1 1ba12b24feac1ac82c2fc15e22f5e56eae203fac arke19 <arke19me@student.ju.se> 1682243326 +0200	commit: added a script to test arduino spindeg
+1ba12b24feac1ac82c2fc15e22f5e56eae203fac 1ba12b24feac1ac82c2fc15e22f5e56eae203fac arke19 <arke19me@student.ju.se> 1682406136 +0200	checkout: moving from serial_spindeg to dev_slam
+1ba12b24feac1ac82c2fc15e22f5e56eae203fac fb2fbd174bac3b6d111df989d7ac4706d258e602 arke19 <arke19me@student.ju.se> 1682410326 +0200	pull: Fast-forward
+fb2fbd174bac3b6d111df989d7ac4706d258e602 fd600786161e4660bd2a5ebbf5f0f2a5c23ce52b arke19 <arke19me@student.ju.se> 1682411103 +0200	commit: SLAM LOCALIZATION WORKS SORTOF
+fd600786161e4660bd2a5ebbf5f0f2a5c23ce52b fd600786161e4660bd2a5ebbf5f0f2a5c23ce52b arke19 <arke19me@student.ju.se> 1682412269 +0200	reset: moving to HEAD
+fd600786161e4660bd2a5ebbf5f0f2a5c23ce52b 2a30f02f7705b5c705a7c3490b33200aa0bb798b arke19 <arke19me@student.ju.se> 1682412271 +0200	pull: Fast-forward
+2a30f02f7705b5c705a7c3490b33200aa0bb798b 2620f0412895c3b301dad876e18ea939722d7cd4 arke19 <arke19me@student.ju.se> 1682412583 +0200	pull: Fast-forward
+2620f0412895c3b301dad876e18ea939722d7cd4 6138dccffe4a64f81a1d683c7c301123e070ad16 arke19 <arke19me@student.ju.se> 1682413638 +0200	commit: changed slam proto
+6138dccffe4a64f81a1d683c7c301123e070ad16 0d9ca43d6ddb3a4fd8a644f1b6547925580fb9a8 arke19 <arke19me@student.ju.se> 1682414042 +0200	pull: Fast-forward
+0d9ca43d6ddb3a4fd8a644f1b6547925580fb9a8 760b5e800c533ea62c41f6ff88f0250be5f9357f arke19 <arke19me@student.ju.se> 1682426940 +0200	commit: working state sort of
+760b5e800c533ea62c41f6ff88f0250be5f9357f 5bea5421e39cbb0f6e996746ecfedfcdeb669375 arke19 <arke19me@student.ju.se> 1682426965 +0200	pull: Merge made by the 'recursive' strategy.
+5bea5421e39cbb0f6e996746ecfedfcdeb669375 d63dce3dbabca31769f6c5c686fad6d826e1223f arke19 <arke19me@student.ju.se> 1682428726 +0200	commit: safe push before packing up for the day
+d63dce3dbabca31769f6c5c686fad6d826e1223f d63dce3dbabca31769f6c5c686fad6d826e1223f arke19 <arke19me@student.ju.se> 1682670876 +0200	checkout: moving from dev_slam to restapi_obstacle
+d63dce3dbabca31769f6c5c686fad6d826e1223f aa3b9bdc73c69cec60d1e33fe098e5c61e265ccd arke19 <arke19me@student.ju.se> 1682670886 +0200	commit: added class for camera
+aa3b9bdc73c69cec60d1e33fe098e5c61e265ccd c56ebb75d5ad415ac25610b0461587c39602e14e arke19 <arke19me@student.ju.se> 1682670941 +0200	commit: added class
+c56ebb75d5ad415ac25610b0461587c39602e14e c6b3a8e76d97d30ccc3901c47456de93f93b8573 arke19 <arke19me@student.ju.se> 1682673127 +0200	commit: improved focus of camera and name convention
+c6b3a8e76d97d30ccc3901c47456de93f93b8573 610b0b274b29c6ab6a95411596e9c101e9193df1 arke19 <arke19me@student.ju.se> 1682678498 +0200	checkout: moving from restapi_obstacle to dev
+610b0b274b29c6ab6a95411596e9c101e9193df1 ff158385780dfd8dfd4e55d8a96c631f58271bbd arke19 <arke19me@student.ju.se> 1683114427 +0200	pull: Fast-forward
+ff158385780dfd8dfd4e55d8a96c631f58271bbd ff158385780dfd8dfd4e55d8a96c631f58271bbd arke19 <arke19me@student.ju.se> 1683114604 +0200	checkout: moving from dev to dev_websocket
+ff158385780dfd8dfd4e55d8a96c631f58271bbd 3af163a8012e68fa6453e6ff4a6b1011a75ce0e1 arke19 <arke19me@student.ju.se> 1683114629 +0200	commit: websocket file pushed
+3af163a8012e68fa6453e6ff4a6b1011a75ce0e1 1a6ca2c328ec1e65f94becdf223da9b7226b1327 arke19 <arke19me@student.ju.se> 1683119517 +0200	commit: mockserver sending json joystick data for testing
+1a6ca2c328ec1e65f94becdf223da9b7226b1327 a8fa5910124780a69e348c5d03db5a475d468cba arke19 <arke19me@student.ju.se> 1683121253 +0200	commit: started with arduino bridge from pi
+a8fa5910124780a69e348c5d03db5a475d468cba 4e6416ea915e835c0ae02c9a7d69d2313f0fd880 arke19 <arke19me@student.ju.se> 1683121728 +0200	commit: websocket ready for app communication
+4e6416ea915e835c0ae02c9a7d69d2313f0fd880 ff158385780dfd8dfd4e55d8a96c631f58271bbd arke19 <arke19me@student.ju.se> 1683121927 +0200	checkout: moving from dev_websocket to dev
+ff158385780dfd8dfd4e55d8a96c631f58271bbd bc9fef7d3cbead9f7ab28e95360607afcc808f0c arke19 <arke19me@student.ju.se> 1683121958 +0200	pull: Fast-forward
+bc9fef7d3cbead9f7ab28e95360607afcc808f0c 68303c1124db2962cae01c5caf37ffc9da60e091 arke19 <arke19me@student.ju.se> 1683127766 +0200	commit: mockserver testscriptand websocket to app communication works
+68303c1124db2962cae01c5caf37ffc9da60e091 904e3ae33e2b8052e897035d4419ce359a1f22a2 arke19 <arke19me@student.ju.se> 1683130801 +0200	commit: finshed for the day, still bug with app sending data too frequently
+904e3ae33e2b8052e897035d4419ce359a1f22a2 6972f65fd5221ab65ed624afce00c42f3d57255a arke19 <arke19me@student.ju.se> 1683269318 +0200	pull: Fast-forward
+6972f65fd5221ab65ed624afce00c42f3d57255a 9a3f69be97819d0a1943946245588d7eceaadaff arke19 <arke19me@student.ju.se> 1683275847 +0200	commit: adjusted joystick sensetivity
+9a3f69be97819d0a1943946245588d7eceaadaff 3de49c84a214ba09ba66074974ea460c258fa468 arke19 <arke19me@student.ju.se> 1683283780 +0200	commit: app drive almost finished
+3de49c84a214ba09ba66074974ea460c258fa468 b97966cfe86128331eb4ff22a679955df4e74ae6 arke19 <arke19me@student.ju.se> 1683283886 +0200	commit: .
+b97966cfe86128331eb4ff22a679955df4e74ae6 9dbeceaea3c3bc3096c8968ecf1a5be979c886ef arke19 <arke19me@student.ju.se> 1683285472 +0200	pull: Fast-forward
+9dbeceaea3c3bc3096c8968ecf1a5be979c886ef 23bbed5f809db0bbcae81b22b782522965b49456 arke19 <arke19me@student.ju.se> 1683285645 +0200	pull: Fast-forward
+23bbed5f809db0bbcae81b22b782522965b49456 46e72419bb920af8fb819d4c7b0a6a3683f135e0 arke19 <arke19me@student.ju.se> 1683285717 +0200	pull: Fast-forward
+46e72419bb920af8fb819d4c7b0a6a3683f135e0 c1fadf139fb43d9e537b78ee42d52a8e5ea6038a arke19 <arke19me@student.ju.se> 1683286024 +0200	pull: Fast-forward
+c1fadf139fb43d9e537b78ee42d52a8e5ea6038a cbc7e4497aa4110c863d6a718166afc258c102a9 arke19 <arke19me@student.ju.se> 1683286452 +0200	pull: Fast-forward
+cbc7e4497aa4110c863d6a718166afc258c102a9 d2b15602de21b0989897635b522109e58cccdf30 arke19 <arke19me@student.ju.se> 1683287451 +0200	pull: Fast-forward
+d2b15602de21b0989897635b522109e58cccdf30 2ba9028d72fc3921d9856d2704abfe8a4cd7dc7a arke19 <arke19me@student.ju.se> 1683287839 +0200	pull: Fast-forward
+2ba9028d72fc3921d9856d2704abfe8a4cd7dc7a 0f0477391cb89b73e8a6ac9df58c75d98d1c8544 arke19 <arke19me@student.ju.se> 1683288042 +0200	pull: Fast-forward
+0f0477391cb89b73e8a6ac9df58c75d98d1c8544 f2b73b0ba2d1cce5e79aab99e1509ed3c2509258 arke19 <arke19me@student.ju.se> 1683288132 +0200	pull: Fast-forward
+f2b73b0ba2d1cce5e79aab99e1509ed3c2509258 ac880f8d6ca3d7312f86e9b256607744ac7db289 arke19 <arke19me@student.ju.se> 1683288235 +0200	pull: Fast-forward
+ac880f8d6ca3d7312f86e9b256607744ac7db289 ac880f8d6ca3d7312f86e9b256607744ac7db289 arke19 <arke19me@student.ju.se> 1683711702 +0200	checkout: moving from dev to automamous_drive
+ac880f8d6ca3d7312f86e9b256607744ac7db289 b2720ed9e0ca01442af010745b20badd68a2b22a arke19 <arke19me@student.ju.se> 1683720751 +0200	commit: automanous started
+b2720ed9e0ca01442af010745b20badd68a2b22a a2ff17aaf3738dc4ec75d1200cd5ee098af0d522 arke19 <arke19me@student.ju.se> 1683723562 +0200	commit (merge): added files for testing
+a2ff17aaf3738dc4ec75d1200cd5ee098af0d522 ac880f8d6ca3d7312f86e9b256607744ac7db289 arke19 <arke19me@student.ju.se> 1683723578 +0200	checkout: moving from automamous_drive to dev
+ac880f8d6ca3d7312f86e9b256607744ac7db289 a2ff17aaf3738dc4ec75d1200cd5ee098af0d522 arke19 <arke19me@student.ju.se> 1683723651 +0200	checkout: moving from dev to automamous_drive
+a2ff17aaf3738dc4ec75d1200cd5ee098af0d522 9f485203f8ee9421b1f79682764d9f29cbf9ff34 arke19 <arke19me@student.ju.se> 1683792054 +0200	commit: Sum Changus by @albinSamefors
+9f485203f8ee9421b1f79682764d9f29cbf9ff34 7ea37074f1ad29c8b4a5d77e349afcb1dc5c48bb arke19 <arke19me@student.ju.se> 1683875220 +0200	commit: Sum stuff 2
+                                                                                                                                                         
