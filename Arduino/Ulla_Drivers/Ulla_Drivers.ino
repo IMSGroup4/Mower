@@ -330,18 +330,18 @@ void changeDirection(Direction dir){
 
 void updatePosition(){
   //double* pos = new double[3];
-  float wheelCirc  = M_PI * 0.045;
+  //float wheelCirc  = M_PI * 0.045;
   gyro.fast_update();
-  double Sangle = gyro.getAngleZ() +180;
-  double LRPMS = leftSpeed;
-  double RRPMS = rightSpeed;
-  double   = wheelCirc * LRPMS;
-  double rightMotorSpeed = wheelCirc * RRPMS;
+  double Sangle = gyro.getAngleZ();
+  //double LRPMS = leftSpeed;
+  ////double RRPMS = rightSpeed;
+  //double   = wheelCirc * LRPMS;
+  //double rightMotorSpeed = wheelCirc * RRPMS;
   //Serial.println("LEFT MOTOR SPEED ");
   //Serial.println(leftSpeed);
   //Serial.println("RIGHT MOTOR SPEED ");
   //Serial.println(rightSpeed);
-  double avgSpeed = (leftMotorSpeed + rightMotorSpeed)/2;
+  //double avgSpeed = (leftMotorSpeed + rightMotorSpeed)/2;
   //int newX = oldX + (cos(radians(Sangle)) * avgSpeed);
   //double newY = oldY + (sin(radians(Sangle)) * avgSpeed);
   String sendData = String(-leftSpeed) + "," + String(rightSpeed) + "," + Sangle;
