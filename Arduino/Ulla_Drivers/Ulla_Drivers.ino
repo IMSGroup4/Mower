@@ -344,7 +344,7 @@ void updatePosition(){
   //double avgSpeed = (leftMotorSpeed + rightMotorSpeed)/2;
   //int newX = oldX + (cos(radians(Sangle)) * avgSpeed);
   //double newY = oldY + (sin(radians(Sangle)) * avgSpeed);
-  String sendData = String(-leftSpeed) + "," + String(rightSpeed) + "," + Sangle;
+  String sendData = String(-leftSpeed) + ", " + String(rightSpeed) + ", " + int(round(Sangle));
   
   Serial.println(sendData);
   //Serial.write("hej",4);
@@ -352,7 +352,7 @@ void updatePosition(){
 }
 
 void SpinCWDeg(int deg){
-  gyro.update();
+  gyro.fast_update();
   double initial_deg = gyro.getAngleZ();
   double target_deg = initial_deg + deg;
   if(target_deg>= 180){
@@ -361,14 +361,14 @@ void SpinCWDeg(int deg){
   }
   double current_deg = gyro.getAngleZ();
   while((int)target_deg != (int)current_deg){
-    gyro.update();
+    gyro.fast_update();
     current_deg = gyro.getAngleZ();
     changeDirection(Direction::spinCW);
 }
 changeDirection(Direction::stop);
 }
 void SpinCCWDeg(int deg){
-  gyro.update();
+  gyro.fast_update();
   double initial_deg = gyro.getAngleZ();
   double target_deg = initial_deg - deg;
   if(target_deg< -180){
@@ -376,7 +376,7 @@ void SpinCCWDeg(int deg){
   }
   double current_deg = gyro.getAngleZ();
   while((int)target_deg != (int)current_deg){
-    gyro.update();
+    gyro.fast_update();
     current_deg = gyro.getAngleZ();
     changeDirection(Direction::spinCCW);
 
@@ -414,7 +414,7 @@ void grayscaleTest(){
     SpinCCWDeg(45-5);
     break;
   case S1_OUT_S2_OUT:
-    //Serial.println("BOTH SENSORS ARE OUTSIDE");
+    //Serial.println("BOTH SENSORS ARE OUTSIDE");s
     changeDirection(Direction::forward);
     break;
 
@@ -527,6 +527,7 @@ void loop() {
             has_autonamous = true;
           }
         while(has_autonamous){
+          updatePosition();
           if(Serial.available() > 0 ){
               intArray = getInformation();
               readHeader = intArray[0];
@@ -540,7 +541,6 @@ void loop() {
           }
           int autonomousHeader = intArray[1];
           //Serial.println(autonomousHeader);
-          updatePosition();
           switch(autonomousHeader){
             case 0:
               //Serial.println("Starting GrayscaleTest");
@@ -549,11 +549,6 @@ void loop() {
             case 1:
               //Serial.println("STOPSTOP");
               changeDirection(Direction::stop);
-              break;
-            
-            case 3:
-              updatePosition();
-              intArray[1] = 0;
               break;
             
             case 2:
@@ -596,7 +591,6 @@ void loop() {
           int oldR = 0;
           int oldL = 0;
           while(has_motor_control){
-            updatePosition();
             if(Serial.available() > 0 ){
               intArray = getInformation();
               readHeader = intArray[0];
@@ -605,16 +599,13 @@ void loop() {
                 changeDirection(Direction::stop);
               }
             }
-          if(intArray[1] == 3){
-            updatePosition();
-              
-          }
           else{
           leftSpeed = -intArray[1];
           rightSpeed = intArray[2];
           //Serial.println(leftMotor);
           //Serial.println(rightMotor);
           if((oldL != leftSpeed) && (oldR != rightSpeed)){
+          updatePosition();
           LeftMotor.setMotorPwm(leftSpeed);
           RightMotor.setMotorPwm(rightSpeed);
           oldR = rightSpeed;
