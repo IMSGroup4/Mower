@@ -1,19 +1,16 @@
 from websockets.sync.client import connect
+import base64
 import json
 import asyncio
 import time
 import serial
 import math
+import threading
 from rplidar import RPLidar
-
-
-from camera_handler import CameraHandler
-from lidar_handler import CollisionDetector
-
-#if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
+from restAPI_handler import RestAPIHandler
+from picamera import PiCamera
+#from location_data import ser_read.Positioning, lidar_handler.LidarData
 ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=1)
-lidar = RPLidar('/dev/ttyUSB0')
-collisionDetector = CollisionDetector()
 #this is to start the serial port correctly, might lead to errors during runtime otherwise
 ser.setDTR(False)
 time.sleep(1)
@@ -21,9 +18,17 @@ ser.flushInput()
 ser.setDTR(True)
 time.sleep(2)
 
+import lidar_handler
+import dead_reckoning
+import ser_read
+
+#if serial fail try to change it to /dev/ttyACM0 /dev/ttyUSB1 or /dev/ttyUSB0
+
+
+
 websocket_server = "wss://ims-group-4-backend-david.azurewebsites.net/ws/mower"
 mock_server = "ws://localhost:8000"
-camera = CameraHandler()
+restAPI = RestAPIHandler()
 
 
 def driveConverter(x,y):
@@ -58,11 +63,23 @@ def driveConverter(x,y):
 		leftMotor = speed * direction
 	motorSpeeds = [rightMotor,leftMotor]
 	return motorSpeeds
-	
-	
+def take_picture():
+	camera = PiCamera()
+	camera.resolution = (1280, 720)
+	camera.contrast = 1
+
+	camera.capture("image.jpg")
+	camera.close()
+	print("Done.")
+def send_picture(obstacleX, obstacleY):
+	image = "image.jpg"
+	image_64 = base64.b64encode(open(image,"rb").read())
+	restAPI.obstacle_send(image_64, obstacleX, obstacleY)
 # Currently having issue with recurring messages, can only view every other message sent by the server
 # This will be tested with the liveserver when the app is ready to send data to the mower.
 def websocket_client():
+	#ser_read.ser_read.position
+	#lidar_handler.lidarData
 	diff_speed = 0
 	current_position = (0,0)
 	time_sent = round(time.time() * 1000)
@@ -85,6 +102,7 @@ def websocket_client():
 				data_action = ""
 			
 			if data_action == "joystick":
+				lidar_handler.lidarData.forwardDetection = False
 				x = round(data["x"],1)
 				y = round(data["y"],1)
 				
@@ -92,7 +110,7 @@ def websocket_client():
 				totSpeed = motorSpeeds[0] + motorSpeeds[1]
 				run_time = round(time.time() * 1000)
 				print("TIME DIFF:	{}".format((run_time-time_sent)))
-				if (run_time - time_sent) > 75:
+				if (run_time - time_sent) > 50:
 					send_data = f'1,{round(motorSpeeds[0])},{round(motorSpeeds[1])}'
 					print("send_data:",str(send_data))
 					ser.write(send_data.encode('utf-8'))
@@ -102,40 +120,39 @@ def websocket_client():
 					#print(recieved_date)
 					print("LeftSpeed = {}, RightSpeed = {}".format(motorSpeeds[0],motorSpeeds[1]))
 			elif data_action == "autonomous":
-				run_clock = time.time * 1000
+				lidar_handler.lidarData.forwardDetection = True
+				run_clock = (time.time() * 1000)
+	
 				send_data = f'10,0'
 				ser.write(send_data.encode('utf-8'))
-				print("STARTED SOME SHIT")
-				avg_len = 0
-				avg_deg = 0
-				running_speed = 200
-				try:
-					lidar.reset()
-					avg_deg, avg_len = collisionDetector.forward_detection(lidar)
-				except Exception as e:
-					print(e)
-					print("OOPSIE WOOPSIE I DID A FUCKO WUCKO")
-				print("FOUND OBSTACLE {} DEG {} LEN".format(avg_deg,avg_len))
-				if avg_len == 0:
-					pass
-				elif (run_clock + 500) < (time.time * 1000):
-					#Get Gyro Information from ULLA
-					ser.write(10,3)
-					ser.readline()
-
-					#SEND POSITION HERE!
-
-					pass
-				elif avg_len > 0:
+				print("STARTED SOME SHIT  000000000000000000000000000")
+				print("OBSTACLE DETECTED IS {}. ------------------------------------------------".format(lidar_handler.lidarData.obstacleDetected))
+				#avg_len = 0
+				#avg_deg = 0
+				#running_speed = 200
+				#try:
+				#	lidar.reset()
+				#	avg_deg, avg_len = collisionDetector.forward_detection(lidar)
+				#except Exception as e:
+				#	print(e)
+				#print("FOUND OBSTACLE {} DEG {} LEN".format(lidar_handler.lidarData.avg_deg,lidar_handler.lidarData.avg_len))
+				if lidar_handler.lidarData.obstacleDetected == True:
+					print("OBSTACLE DETECTED NOW AWONASFPAISBFAPSOBFAPSOBFAPOSBFAPOSBFPAOSBFAPOSBFPAOSBF")
 					send_data = "10,1"
 					ser.write(send_data.encode('utf-8'))
 					print("SENT STOP CALL:	{}".format(send_data.encode('utf-8')))
-					time.sleep(1)
-					send_data = f"10,2,{avg_deg}"
+					time.sleep(0.2)
+					send_data = f"10,2,{int(lidar_handler.lidarData.avg_deg)}"
 					ser.write(send_data.encode('utf-8'))
 					print("SENT DATA:	{}".format(send_data.encode('utf-8')))
-					time.sleep(1)
-					if avg_deg < 0:
+					time.sleep(0.2)
+					obstacleX = ser_read.position.posX + (lidar_handler.lidarData.avg_len * math.cos(math.radians(lidar_handler.lidarData.avg_deg)))
+					obstacleY = ser_read.position.posY + (lidar_handler.lidarData.avg_len * math.sin(math.radians(lidar_handler.lidarData.avg_deg)))
+					take_picture()
+					time.sleep(0.2)
+					send_picture(int(obstacleX),int(obstacleY))
+					lidar_handler.lidarData.obstacleDetected = False
+					if lidar_handler.lidarData.avg_deg < 0:
 						send_data = f"10,2,40"
 						ser.write(send_data.encode('utf-8'))
 						print("SENT AVERSION CALL 10,2,40")
@@ -143,7 +160,15 @@ def websocket_client():
 						send_data = f"10,2,-40"
 						ser.write(send_data.encode('utf-8'))
 						print("SENT AVERSION CALL 10,2,-40")
-					time.sleep(1)
+				if (run_clock + 500) < (time.time() * 1000):
+					pass
+					#Get Gyro Information from ULLA
+					#print("______________ Request POS from ARDUINO")
+					#send_data = f'10,3'
+					#ser.write(send_data.encode('utf-8'))
+					#response = ser.readline().decode('utf-8').rstrip()
+					#print('Arduino sent back %s' % response)
+					##time.sleep(1)
 					#send_data = "10,0"
 					#ser.write(send_data.encode('utf-8'))
 					#print("MOVING AS NORMAL")
@@ -154,8 +179,34 @@ def websocket_client():
 			#bytes(send_data,'utf-8')
 			#ser.write(send_data.encode('utf-8'))
 			
-    
-websocket_client()
+def main():
+	try:
+		dead_rec_thread = threading.Thread(target=dead_reckoning.main)
+		ser_read_thread = threading.Thread(target=ser_read.main)
+		lidar_thread = threading.Thread(target=lidar_handler.main)
+		main_thread = threading.Thread(target=websocket_client)
+		rest_api_thread = threading.Thread(target=restAPI.start_session)
+		print("STARTING LIDAR THREAD")
+		lidar_thread.start()
+		print("STARTING DEAD REC THREAD")
+		dead_rec_thread.start()
+		print("STARTING SER READ THREAD")
+		ser_read_thread.start()
+		#restAPI.start_session()
+		print("STARTING REST API THREAD")
+		rest_api_thread.start()
+		print("STARTING WEBSOCKET CLIENT")
+		main_thread.start()
+		#websocket_client()
+	except KeyboardInterrupt:
+		dead_rec_thread.join()
+		ser_read_thread.join()
+		lidar_thread.join()
+		main_thread.join()
+		rest_api_thread.join()
+if __name__ == "__main__":
+	main()
+
 
 
 		
